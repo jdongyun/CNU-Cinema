@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <title>회원가입</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<form class="signup" action="/auth/signup" method="post">
+    <input type="text" name="username" placeholder="ID" /><br/>
+    <input type="text" name="name" placeholder="name" /><br/>
+    <input type="password" name="password" placeholder="PW"/><br/>
+    <input type="email" name="email" placeholder="email" /><br/>
+    <input type="text" name="birthDate" placeholder="YYYY-MM-DD"/><br/>
+    <input type="text" name="sex" placeholder="M"/><br/>
+    <button type="submit">Submit</button>
+</form>
+</body>
+</html>
