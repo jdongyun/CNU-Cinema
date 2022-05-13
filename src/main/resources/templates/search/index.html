@@ -1,0 +1,41 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <title>CNU 영화관 - 영화 검색</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <form action="" method="get">
+        <label>
+            <input type="text" name="title" placeholder="영화 제목" th:value="${title}"/>
+        </label>
+        <label>
+            <input type="date" name="ticketingDate" placeholder="영화 관람일" th:value="${ticketingDate}"/>
+        </label>
+        <button type="submit">검색</button>
+    </form>
+
+    <p th:text="${movies.size() > 0 ? '' : '해당하는 영화가 없습니다.'}"></p>
+
+    <table th:style="${movies.size() > 0 ? '' : 'visibility:hidden'}">
+        <thead>
+            <tr>
+                <th>영화 제목</th>
+                <th>개봉일자</th>
+                <th>관람등급</th>
+                <th>러닝타임</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="movie : ${movies}">
+                <td>
+                    <a th:href="@{/search/{id}(id=${movie.getMid()})}" th:text="${movie.getTitle()}"></a>
+                </td>
+                <td th:text="${movie.getOpenDay()}"></td>
+                <td th:text="${movie.getRating()}"></td>
+                <td th:text="${movie.getLength()}"></td>
+            </tr>
+        </tbody>
+    </table>
+</body>
+</html>

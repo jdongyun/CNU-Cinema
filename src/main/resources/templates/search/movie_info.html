@@ -1,0 +1,36 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <title>CNU 영화관 - 영화 정보</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<h1 th:text="${title}"></h1>
+<p>영화 개봉일 : <span th:text="${open_day}"></span></p>
+<p>감독 : <span th:text="${director}"></span></p>
+<p>등급 : <span th:text="${rating}"></span></p>
+<p>러닝타임 : <span th:text="${length} + '분'"></span></p>
+<p>배우 : <span th:text="${actors}"></span></p>
+<table>
+    <thead>
+    <tr>
+        <th>SID</th>
+        <th>상영 시간표</th>
+        <th>영화관 이름</th>
+        <th>잔여석</th>
+    </tr>
+
+    </thead>
+    <tbody>
+    <tr th:each="schedule : ${schedules}">
+        <td th:text="${schedule.sid}"></td>
+        <td th:text="${schedule.showAt}"></td>
+        <td th:text="${schedule.tname}"></td>
+        <td th:text="${schedule.remainSeats}"></td>
+    </tr>
+    </tbody>
+
+</table>
+
+</body>
+</html>
