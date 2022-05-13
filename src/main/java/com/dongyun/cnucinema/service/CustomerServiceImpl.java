@@ -33,7 +33,6 @@ public class CustomerServiceImpl implements CustomerService {
 
         validateDuplicateId(dto.getUsername());
 
-        // TODO: encryption 적용.
         String encryptedPassword = passwordEncoder.encode(dto.getPassword());
 
         CustomerDto customer = CustomerDto.builder()
