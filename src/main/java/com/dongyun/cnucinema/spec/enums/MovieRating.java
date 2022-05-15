@@ -1,10 +1,19 @@
 package com.dongyun.cnucinema.spec.enums;
 
 public enum MovieRating {
-    ALL,
-    _12,
-    _15,
-    _18;
+    ALL(0),
+    _12(12),
+    _15(15),
+    _18(18);
+
+    private final int value;
+    MovieRating(int value) {
+        this.value = value;
+    }
+
+    public int getValue() {
+        return value;
+    }
 
     @Override
     public String toString() {
