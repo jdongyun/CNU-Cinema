@@ -25,7 +25,9 @@ public class DbCustomerRepository implements CustomerRepository {
 
     @Override
     public Optional<Customer> findByUsername(String username) {
-        String sql = "select * from Customer left outer join Authority A on Customer.username = A.username where Customer.username = :username";
+        String sql = "select *, TIMESTAMPDIFF(YEAR, birth_date, NOW()) age from Customer " +
+                "left outer join Authority A on Customer.username = A.username " +
+                "where Customer.username = :username";
         List<Customer> result = jdbcTemplate.query(sql,
                 new MapSqlParameterSource("username", username),
                 customerRowMapper());
@@ -35,7 +37,8 @@ public class DbCustomerRepository implements CustomerRepository {
 
     @Override
     public List<Customer> findAll() {
-        String sql = "select * from Customer left outer join Authority A on Customer.username = A.username";
+        String sql = "select *, TIMESTAMPDIFF(YEAR, birth_date, NOW()) age from Customer " +
+                "left outer join Authority A on Customer.username = A.username";
         return jdbcTemplate.query(sql, customerRowExtractor());
     }
 
@@ -78,6 +81,7 @@ public class DbCustomerRepository implements CustomerRepository {
                         .email(rs.getString("email"))
                         .birthDate(LocalDate.parse(rs.getString("birth_date")))
                         .sex(Sex.valueOf(rs.getString("sex")))
+                        .age(rs.getInt("age"))
                         .authorities(new HashSet<>())
                         .build();
 
@@ -101,6 +105,7 @@ public class DbCustomerRepository implements CustomerRepository {
                     .email(rs.getString("email"))
                     .birthDate(LocalDate.parse(rs.getString("birth_date")))
                     .sex(Sex.valueOf(rs.getString("sex")))
+                    .age(rs.getInt("age"))
                     .authorities(new HashSet<>())
                     .build();
 

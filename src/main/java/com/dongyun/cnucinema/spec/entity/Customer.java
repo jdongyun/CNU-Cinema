@@ -24,10 +24,7 @@ public class Customer {
 
     private Sex sex;
 
-    private Set<GrantedAuthority> authorities;
+    private int age;
 
-    public int getAge() {
-        // TODO: Derived attribute.
-        return 20;
-    }
+    private Set<GrantedAuthority> authorities;
 }
