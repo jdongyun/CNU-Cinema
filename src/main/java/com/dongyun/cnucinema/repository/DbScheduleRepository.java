@@ -25,9 +25,9 @@ public class DbScheduleRepository implements ScheduleRepository {
     public Optional<Schedule> findBySid(Long id) {
         String sql = "select Schedule.*, T2.seats , (T2.seats - IFNULL(sum(T.seats), 0)) remain_seats " +
                 "from Schedule " +
-                "left outer join Ticketing T on Schedule.sid = T.sid " +
+                "left outer join Ticketing T on Schedule.sid = T.sid and (T.status IS NULL or T.status <> 'C') " +
                 "join Theater T2 on Schedule.tname = T2.tname " +
-                "where T.status IS NULL or T.status <> 'C' AND Schedule.sid = :sid " +
+                "where Schedule.sid = :sid " +
                 "group by Schedule.sid";
         return jdbcTemplate.query(sql,
                 new MapSqlParameterSource("sid", id),
@@ -38,9 +38,9 @@ public class DbScheduleRepository implements ScheduleRepository {
     public List<Schedule> findByMid(Long id) {
         String sql = "select Schedule.*, T2.seats , (T2.seats - IFNULL(sum(T.seats), 0)) remain_seats " +
                 "from Schedule " +
-                "left outer join Ticketing T on Schedule.sid = T.sid " +
+                "left outer join Ticketing T on Schedule.sid = T.sid and (T.status IS NULL or T.status <> 'C') " +
                 "join Theater T2 on Schedule.tname = T2.tname " +
-                "where T.status IS NULL or T.status <> 'C' AND Schedule.mid = :mid " +
+                "where mid = :mid " +
                 "group by Schedule.sid";
         return jdbcTemplate.query(sql,
                 new MapSqlParameterSource("mid", id),
@@ -51,9 +51,9 @@ public class DbScheduleRepository implements ScheduleRepository {
     public List<Schedule> findByTname(String tname) {
         String sql = "select Schedule.*, T2.seats , (T2.seats - IFNULL(sum(T.seats), 0)) remain_seats " +
                 "from Schedule " +
-                "left outer join Ticketing T on Schedule.sid = T.sid " +
+                "left outer join Ticketing T on Schedule.sid = T.sid and (T.status IS NULL or T.status <> 'C') " +
                 "join Theater T2 on Schedule.tname = T2.tname " +
-                "where T.status IS NULL or T.status <> 'C' AND Schedule.tname = :tname " +
+                "where Schedule.tname = :tname " +
                 "group by Schedule.sid";
         return jdbcTemplate.query(sql,
                 new MapSqlParameterSource("tname", tname),
@@ -75,9 +75,8 @@ public class DbScheduleRepository implements ScheduleRepository {
     public List<Schedule> findAll() {
         String sql = "select Schedule.*, T2.seats , (T2.seats - IFNULL(sum(T.seats), 0)) remain_seats " +
                 "from Schedule " +
-                "left outer join Ticketing T on Schedule.sid = T.sid " +
+                "left outer join Ticketing T on Schedule.sid = T.sid and (T.status IS NULL or T.status <> 'C' ) " +
                 "join Theater T2 on Schedule.tname = T2.tname " +
-                "where T.status IS NULL or T.status <> 'C' " +
                 "group by Schedule.sid";
         return jdbcTemplate.query(sql, scheduleRowMapper());
     }
