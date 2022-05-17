@@ -6,6 +6,8 @@ import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.Set;
 
 @Builder
@@ -24,7 +26,9 @@ public class Customer {
 
     private Sex sex;
 
-    private int age;
-
     private Set<GrantedAuthority> authorities;
+
+    public int getAge() {
+        return Period.between(this.getBirthDate(), LocalDate.now()).getYears();
+    }
 }
