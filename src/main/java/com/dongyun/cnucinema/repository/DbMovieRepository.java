@@ -23,8 +23,11 @@ public class DbMovieRepository implements MovieRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public DbMovieRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+    private final DateTimeFormatter dateTimeFormatter;
+
+    public DbMovieRepository(NamedParameterJdbcTemplate jdbcTemplate, DateTimeFormatter dateTimeFormatter) {
         this.jdbcTemplate = jdbcTemplate;
+        this.dateTimeFormatter = dateTimeFormatter;
     }
 
     @Override
@@ -125,7 +128,6 @@ public class DbMovieRepository implements MovieRepository {
     }
 
     private ResultSetExtractor<List<Movie>> movieRowWithSchedulesExtractor() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
         return (rs) -> {
             List<Movie> movies = new ArrayList<>();
             if (!rs.next()) return movies;
@@ -147,7 +149,7 @@ public class DbMovieRepository implements MovieRepository {
                     movie.getSchedules().add(Schedule.builder()
                             .sid(rs.getLong("sid"))
                             .mid(rs.getLong("mid"))
-                            .showAt(LocalDateTime.parse(rs.getString("show_at"), formatter))
+                            .showAt(LocalDateTime.parse(rs.getString("show_at"), dateTimeFormatter))
                             .tname(rs.getString("tname"))
                             .build());
                 }

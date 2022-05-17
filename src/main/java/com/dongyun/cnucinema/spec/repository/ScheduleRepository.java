@@ -19,5 +19,5 @@ public interface ScheduleRepository {
 
     List<Schedule> findAll();
 
-    void save(Schedule schedule);
+    Long save(Schedule schedule);
 }

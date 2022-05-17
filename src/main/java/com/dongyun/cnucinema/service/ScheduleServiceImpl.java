@@ -9,6 +9,7 @@ import com.dongyun.cnucinema.spec.service.ScheduleService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,8 +17,11 @@ import java.util.Optional;
 public class ScheduleServiceImpl implements ScheduleService {
     private final ScheduleRepository scheduleRepository;
 
-    public ScheduleServiceImpl(ScheduleRepository scheduleRepository) {
+    private final DateTimeFormatter dateTimeFormatter;
+
+    public ScheduleServiceImpl(ScheduleRepository scheduleRepository, DateTimeFormatter dateTimeFormatter) {
         this.scheduleRepository = scheduleRepository;
+        this.dateTimeFormatter = dateTimeFormatter;
     }
 
     @Override
@@ -41,24 +45,24 @@ public class ScheduleServiceImpl implements ScheduleService {
     }
 
     @Override
-    public void create(ScheduleCreateRequest request, Movie movie) {
-        LocalDateTime showAtStart = LocalDateTime.parse(request.getShowAt()).minusMinutes(30);
-        LocalDateTime showAtEnd = LocalDateTime.parse(request.getShowAt()).plusMinutes(movie.getLength() + 30);
+    public Long create(ScheduleCreateRequest request, Movie movie) {
+        LocalDateTime showAtStart = LocalDateTime.parse(request.getShowAt(), dateTimeFormatter).minusMinutes(30);
+        LocalDateTime showAtEnd = LocalDateTime.parse(request.getShowAt(), dateTimeFormatter).plusMinutes(movie.getLength() + 30);
 
         validateScreenTime(request.getTname(), showAtStart, showAtEnd);
 
         ScheduleDto schedule = ScheduleDto.builder()
                 .mid(movie.getMid())
                 .tname(request.getTname())
-                .showAt(LocalDateTime.parse(request.getShowAt()))
+                .showAt(LocalDateTime.parse(request.getShowAt(), dateTimeFormatter))
                 .build();
 
-        scheduleRepository.save(ScheduleDto.toEntity(schedule));
+        return scheduleRepository.save(ScheduleDto.toEntity(schedule));
     }
 
     @Override
-    public void save(ScheduleDto scheduleDto) {
-        scheduleRepository.save(ScheduleDto.toEntity(scheduleDto));
+    public Long save(ScheduleDto scheduleDto) {
+        return scheduleRepository.save(ScheduleDto.toEntity(scheduleDto));
     }
 
     private void validateScreenTime(String tname, LocalDateTime showAtStart, LocalDateTime showAtEnd) {

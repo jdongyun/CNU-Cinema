@@ -5,8 +5,10 @@ import com.dongyun.cnucinema.spec.repository.ScheduleRepository;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
+import javax.sql.DataSource;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -17,8 +19,14 @@ public class DbScheduleRepository implements ScheduleRepository {
 
     private final NamedParameterJdbcTemplate jdbcTemplate;
 
-    public DbScheduleRepository(NamedParameterJdbcTemplate jdbcTemplate) {
+    private final DataSource dataSource;
+
+    private final DateTimeFormatter dateTimeFormatter;
+
+    public DbScheduleRepository(NamedParameterJdbcTemplate jdbcTemplate, DataSource dataSource, DateTimeFormatter dateTimeFormatter) {
         this.jdbcTemplate = jdbcTemplate;
+        this.dataSource = dataSource;
+        this.dateTimeFormatter = dateTimeFormatter;
     }
 
     @Override
@@ -62,7 +70,12 @@ public class DbScheduleRepository implements ScheduleRepository {
 
     @Override
     public List<Schedule> findByTnameWithShowAtBetween(String tname, LocalDateTime showAtStart, LocalDateTime showAtEnd) {
-        String sql = "select * from Schedule where tname = :tname AND show_at between :show_at_start and :show_at_end";
+        String sql = "select Schedule.*, T2.seats , (T2.seats - IFNULL(sum(T.seats), 0)) remain_seats " +
+                "from Schedule " +
+                "left outer join Ticketing T on Schedule.sid = T.sid and (T.status IS NULL or T.status <> 'C') " +
+                "join Theater T2 on Schedule.tname = T2.tname " +
+                "where Schedule.tname = :tname AND show_at between :show_at_start and :show_at_end " +
+                "group by Schedule.sid";
         Map<String, Object> params = new HashMap<>();
         params.put("tname", tname);
         params.put("show_at_start", Timestamp.valueOf(showAtStart));
@@ -82,26 +95,46 @@ public class DbScheduleRepository implements ScheduleRepository {
     }
 
     @Override
-    public void save(Schedule schedule) {
-        String sql = "INSERT INTO Schedule (mid, tname, show_at) " +
-                "VALUES (:mid, :tname, :show_at) ON DUPLICATE KEY UPDATE " +
-                "mid = :mid, tname = :tname, show_at = :show_at";
+    public Long save(Schedule schedule) {
+        if (schedule.getSid() == null) {
+            return insert(schedule);
+        } else {
+            return update(schedule);
+        }
+    }
+
+    private Long insert(Schedule schedule) {
+        SimpleJdbcInsert insert = new SimpleJdbcInsert(dataSource)
+                .withTableName("Schedule")
+                .usingGeneratedKeyColumns("sid");
+
         Map<String, Object> params = new HashMap<>();
+        params.put("mid", schedule.getMid());
+        params.put("tname", schedule.getTname());
+        params.put("show_at", schedule.getShowAt());
+        return insert.executeAndReturnKey(params).longValue();
+    }
+
+    private Long update(Schedule schedule) {
+        String sql = "UPDATE Schedule SET mid = :mid, tname = :tname, show_at = :show_at " +
+                "WHERE sid = :sid";
+        Map<String, Object> params = new HashMap<>();
+        params.put("sid", schedule.getSid());
         params.put("mid", schedule.getMid());
         params.put("tname", schedule.getTname());
         params.put("show_at", schedule.getShowAt());
 
         jdbcTemplate.update(sql, params);
+        return schedule.getSid();
     }
 
     private RowMapper<Schedule> scheduleRowMapper() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.S");
         return (rs, rowNum) ->
                 Schedule.builder()
                     .sid(rs.getLong("sid"))
                     .mid(rs.getLong("mid"))
                     .tname(rs.getString("tname"))
-                    .showAt(LocalDateTime.parse(rs.getString("show_at"), formatter))
+                    .showAt(LocalDateTime.parse(rs.getString("show_at"), dateTimeFormatter))
                     .remainSeats(rs.getInt("remain_seats"))
                     .build();
     }
