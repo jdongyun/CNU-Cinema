@@ -18,7 +18,7 @@ public interface ScheduleService {
 
     List<Schedule> findAll();
 
-    void create(ScheduleCreateRequest request, Movie movie);
+    Long create(ScheduleCreateRequest request, Movie movie);
 
-    void save(ScheduleDto scheduleDto);
+    Long save(ScheduleDto scheduleDto);
 }
