@@ -1,0 +1,14 @@
+spring:
+  datasource:
+    driver-class-name: org.h2.Driver
+    url: jdbc:h2:mem:testdb;MODE=MySQL;
+    username: sa
+    password:
+  sql:
+    init:
+      schema-locations: classpath:test-schema.sql
+      data-locations: classpath:test-data.sql
+      mode: always
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
