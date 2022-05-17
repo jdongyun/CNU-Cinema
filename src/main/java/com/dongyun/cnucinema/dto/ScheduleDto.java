@@ -4,11 +4,13 @@ import com.dongyun.cnucinema.spec.entity.Customer;
 import com.dongyun.cnucinema.spec.entity.Schedule;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Builder
 @Getter
+@Setter
 public class ScheduleDto {
 
     private Long sid;
