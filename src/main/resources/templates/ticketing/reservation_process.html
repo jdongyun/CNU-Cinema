@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <title>CNU 영화관 - 영화 예매</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <p th:text="'예약할 영화: ' + ${movie_title}"></p>
+    <p th:text="'상영 시작 시각: ' + ${show_at}"></p>
+    <p th:text="'상영관 이름: ' + ${tname}"></p>
+    <p th:text="'잔여 좌석수: ' + ${remain_seats}"></p>
+    <form action="/ticketing/completion" method="post">
+        <input type="hidden" name="sid" th:value="${sid}" />
+        <label for="seats">예매할 좌석 수:
+            <input type="number" name="seats" id="seats" min="1" max="10" />
+        </label>
+
+        <button type="submit">예매하기</button>
+    </form>
+
+</body>
+</html>

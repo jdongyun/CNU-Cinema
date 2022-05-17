@@ -1,0 +1,14 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <title>CNU 영화관 - 영화 예매</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+    <h1>예매가 완료되었습니다.</h1>
+    <p th:text="'예약한 영화: ' + ${movie_title}"></p>
+    <p th:text="'상영 시작 시각: ' + ${#temporals.format(show_at, 'yyyy-MM-dd HH:mm')}"></p>
+    <p th:text="'상영관 이름: ' + ${tname}"></p>
+    <p th:text="'예매한 좌석 수: ' + ${reserved_seats}"></p>
+</body>
+</html>

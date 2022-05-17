@@ -14,7 +14,7 @@
 <table>
     <thead>
     <tr>
-        <th>SID</th>
+        <th>예매하기</th>
         <th>상영 시간표</th>
         <th>영화관 이름</th>
         <th>잔여석</th>
@@ -23,7 +23,12 @@
     </thead>
     <tbody>
     <tr th:each="schedule : ${schedules}">
-        <td th:text="${schedule.sid}"></td>
+        <td>
+            <form action="/ticketing/process" method="post">
+                <input type="hidden" name="sid" th:value="${schedule.sid}" />
+                <button type="submit">예매하기</button>
+            </form>
+        </td>
         <td th:text="${schedule.showAt}"></td>
         <td th:text="${schedule.tname}"></td>
         <td th:text="${schedule.remainSeats}"></td>
