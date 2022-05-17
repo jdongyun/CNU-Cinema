@@ -25,7 +25,7 @@ public class DbCustomerRepository implements CustomerRepository {
 
     @Override
     public Optional<Customer> findByUsername(String username) {
-        String sql = "select *, TIMESTAMPDIFF(YEAR, birth_date, NOW()) age from Customer " +
+        String sql = "select *, FLOOR((CAST(REPLACE(CURRENT_DATE, '-', '') as integer) - CAST(REPLACE(birth_date, '-', '') as integer)) / 10000) age from Customer " +
                 "left outer join Authority A on Customer.username = A.username " +
                 "where Customer.username = :username";
         List<Customer> result = jdbcTemplate.query(sql,
@@ -37,7 +37,7 @@ public class DbCustomerRepository implements CustomerRepository {
 
     @Override
     public List<Customer> findAll() {
-        String sql = "select *, TIMESTAMPDIFF(YEAR, birth_date, NOW()) age from Customer " +
+        String sql = "select *, FLOOR((CAST(REPLACE(CURRENT_DATE, '-', '') as integer) - CAST(REPLACE(birth_date, '-', '') as integer)) / 10000) age from Customer " +
                 "left outer join Authority A on Customer.username = A.username";
         return jdbcTemplate.query(sql, customerRowExtractor());
     }
@@ -87,7 +87,8 @@ public class DbCustomerRepository implements CustomerRepository {
 
                 for (; !rs.isAfterLast(); rs.next()) {
                     if (!Objects.equals(customer.getUsername(), rs.getString("username"))) break;
-                    customer.getAuthorities().add(new SimpleGrantedAuthority(rs.getString("authority_name")));
+                    if (rs.getString("authority_name") != null)
+                        customer.getAuthorities().add(new SimpleGrantedAuthority(rs.getString("authority_name")));
                 }
                 customers.add(customer);
             }
@@ -111,7 +112,8 @@ public class DbCustomerRepository implements CustomerRepository {
 
             for (; !rs.isAfterLast(); rs.next()) {
                 if (!Objects.equals(customer.getUsername(), rs.getString("username"))) break;
-                customer.getAuthorities().add(new SimpleGrantedAuthority(rs.getString("authority_name")));
+                if (rs.getString("authority_name") != null)
+                    customer.getAuthorities().add(new SimpleGrantedAuthority(rs.getString("authority_name")));
             }
             return customer;
         };
