@@ -3,7 +3,10 @@ package com.dongyun.cnucinema.repository;
 import com.dongyun.cnucinema.BaseIntegrityTest;
 import com.dongyun.cnucinema.dto.ScheduleDto;
 import com.dongyun.cnucinema.spec.entity.Schedule;
+import com.dongyun.cnucinema.spec.entity.Ticketing;
+import com.dongyun.cnucinema.spec.enums.TicketingStatus;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,8 @@ import java.util.List;
 class DbScheduleRepositoryTest implements BaseIntegrityTest {
 
     @Autowired DbScheduleRepository scheduleRepository;
+
+    @Autowired DbTicketingRepository ticketingRepository;
 
     @Test
     @DisplayName("스케줄 ID를 기준으로 존재하는 스케줄 정보를 정상적으로 가져와야 합니다.")
@@ -33,13 +38,22 @@ class DbScheduleRepositoryTest implements BaseIntegrityTest {
     @DisplayName("스케줄의 남은 좌석수가 정상적으로 계산되어야 합니다.")
     void remainSeats() {
         // given
+        ticketingRepository.save(Ticketing.builder()
+                .username("test1").sid(1L).rcAt(LocalDateTime.now())
+                .seats(7).status(TicketingStatus.W).build());
+        ticketingRepository.save(Ticketing.builder()
+                .username("test2").sid(1L).rcAt(LocalDateTime.now())
+                .seats(5).status(TicketingStatus.W).build());
+        ticketingRepository.save(Ticketing.builder()
+                .username("test3").sid(1L).rcAt(LocalDateTime.now())
+                .seats(2).status(TicketingStatus.W).build());
 
         // when
         Schedule schedule1 = scheduleRepository.findBySid(1L).get();
         Schedule schedule2 = scheduleRepository.findBySid(10L).get();
 
         // then
-        Assertions.assertThat(schedule1.getRemainSeats()).isEqualTo(70-7-5-5);
+        Assertions.assertThat(schedule1.getRemainSeats()).isEqualTo(70 - 7 - 5 - 2);
         Assertions.assertThat(schedule2.getRemainSeats()).isEqualTo(65);
     }
 

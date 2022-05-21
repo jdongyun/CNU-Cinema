@@ -58,13 +58,3 @@ INSERT INTO Schedule (sid, mid, tname, show_at) VALUES (16, 4, '부산', '2022-0
 INSERT INTO Schedule (sid, mid, tname, show_at) VALUES (17, 4, '부산', '2022-05-18 10:00:00.0');
 INSERT INTO Schedule (sid, mid, tname, show_at) VALUES (18, 2, '서울', '2022-05-11 10:00:00.0');
 INSERT INTO Schedule (sid, mid, tname, show_at) VALUES (19, 4, '부산', '2022-05-09 10:00:00.0');
-
-INSERT INTO Ticketing (id, username, sid, rc_at, seats, status) VALUES (1, 'test1', 1, '2022-05-13 11:22:33.0', 7, 'R');
-INSERT INTO Ticketing (id, username, sid, rc_at, seats, status) VALUES (2, 'test1', 2, '2022-05-13 11:22:33.0', 3, 'R');
-INSERT INTO Ticketing (id, username, sid, rc_at, seats, status) VALUES (3, 'test2', 1, '2022-05-13 02:17:14.0', 6, 'C');
-INSERT INTO Ticketing (id, username, sid, rc_at, seats, status) VALUES (4, 'test1', 7, '2022-05-15 13:28:49.0', 5, 'R');
-INSERT INTO Ticketing (id, username, sid, rc_at, seats, status) VALUES (5, 'test1', 1, '2022-05-15 13:28:58.0', 5, 'R');
-INSERT INTO Ticketing (id, username, sid, rc_at, seats, status) VALUES (6, 'test1', 2, '2022-05-15 13:30:40.0', 5, 'R');
-INSERT INTO Ticketing (id, username, sid, rc_at, seats, status) VALUES (7, 'test1', 2, '2022-05-15 13:32:24.0', 1, 'R');
-INSERT INTO Ticketing (id, username, sid, rc_at, seats, status) VALUES (8, 'test1', 1, '2022-05-15 13:38:57.0', 5, 'R');
-INSERT INTO Ticketing (id, username, sid, rc_at, seats, status) VALUES (9, 'test1', 2, '2022-05-15 13:43:13.0', 1, 'R');
