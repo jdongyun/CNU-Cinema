@@ -61,7 +61,7 @@ public class DbCustomerRepository implements CustomerRepository {
         // Authority 생성. 기본값은 USER.
         params = new HashMap<>();
         params.put("username", customer.getUsername());
-        params.put("authority_name", "USER");
+        params.put("authority_name", "ROLE_USER");
 
         jdbcTemplate.update("INSERT INTO Authority (username, authority_name) " +
                 "VALUES (:username, :authority_name) ON DUPLICATE KEY UPDATE " +
