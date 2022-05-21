@@ -35,8 +35,8 @@ class CustomerServiceImplTest implements BaseIntegrityTest {
         // then
         Customer customer = customerService.findOne("test_new_customer").get();
         Assertions.assertThat(customer.getUsername()).isEqualTo("test_new_customer");
-        Assertions.assertThat(customer.getAuthorities()).contains(new SimpleGrantedAuthority("USER"));
-        Assertions.assertThat(customer.getAuthorities()).doesNotContain(new SimpleGrantedAuthority("ADMIN"));
+        Assertions.assertThat(customer.getAuthorities()).contains(new SimpleGrantedAuthority("ROLE_USER"));
+        Assertions.assertThat(customer.getAuthorities()).doesNotContain(new SimpleGrantedAuthority("ROLE_ADMIN"));
     }
 
     @Test
