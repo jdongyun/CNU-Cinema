@@ -1,5 +1,6 @@
 package com.dongyun.cnucinema.controller;
 
+import com.dongyun.cnucinema.dto.TicketingCancellationRequest;
 import com.dongyun.cnucinema.dto.TicketingCompletionRequest;
 import com.dongyun.cnucinema.dto.TicketingProcessingRequest;
 import com.dongyun.cnucinema.spec.entity.Movie;
@@ -87,5 +88,23 @@ public class TicketingController {
         }
 
         return "ticketing/reservation_completion";
+    }
+
+    @PostMapping("/cancellation")
+    public String cancelReservation(Authentication auth, Model model, @Validated TicketingCancellationRequest request, BindingResult result) {
+        if (result.hasErrors()) {
+            String errors = Arrays.toString(result.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toArray());
+            model.addAttribute("message", errors);
+            return "error_message";
+        }
+
+        try {
+            ticketingService.cancel(request, auth.getName());
+        } catch (IllegalStateException e) {
+            model.addAttribute("message", e.getMessage());
+            return "error_message";
+        }
+
+        return "ticketing/reservation_cancellation";
     }
 }

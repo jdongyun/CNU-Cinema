@@ -1,5 +1,6 @@
 package com.dongyun.cnucinema.service;
 
+import com.dongyun.cnucinema.dto.TicketingCancellationRequest;
 import com.dongyun.cnucinema.dto.TicketingCompletionRequest;
 import com.dongyun.cnucinema.dto.TicketingDto;
 import com.dongyun.cnucinema.spec.entity.Customer;
@@ -16,7 +17,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TicketingServiceImpl implements TicketingService {
@@ -64,8 +67,50 @@ public class TicketingServiceImpl implements TicketingService {
     }
 
     @Override
+    public void cancel(TicketingCancellationRequest request, String username) {
+        Ticketing ticketing = ticketingRepository.findById(request.getId()).orElseThrow(() -> {
+            throw new IllegalStateException("해당하는 예매 내역이 없습니다.");
+        });
+        if (!ticketing.getUsername().equals(username)) {
+            throw new IllegalStateException("본인의 예매 내역이 아닙니다.");
+        }
+        if (ticketing.getStatus() != TicketingStatus.R) {
+            throw new IllegalStateException("이미 취소되었거나 관람이 완료된 내역입니다.");
+        }
+
+        TicketingDto dto = TicketingDto.create(ticketing);
+        dto.setStatus(TicketingStatus.C);
+        dto.setRcAt(LocalDateTime.now());
+
+        ticketingRepository.save(TicketingDto.toEntity(dto));
+    }
+
+    @Override
+    public Optional<Ticketing> findById(Long id) {
+        return ticketingRepository.findById(id);
+    }
+
+    @Override
+    public List<Ticketing> findBySid(Long sid) {
+        return ticketingRepository.findBySid(sid);
+    }
+
+    @Override
     public List<Ticketing> findByUsername(String username) {
-        return null;
+        return ticketingRepository.findByUsername(username);
+    }
+
+    @Override
+    public List<Ticketing> findByUsernameAndStatus(String username, TicketingStatus status) {
+        switch (status) {
+            case R:
+                return ticketingRepository.findByUsernameAndReservedOrderByRcAtDesc(username);
+            case C:
+                return ticketingRepository.findByUsernameAndCancelledOrderByRcAtDesc(username);
+            case W:
+                return ticketingRepository.findByUsernameAndWatchedOrderByShowAtDesc(username);
+        }
+        return new ArrayList<>();
     }
 
     private void validateRemainSeats(Schedule schedule, int seats) {

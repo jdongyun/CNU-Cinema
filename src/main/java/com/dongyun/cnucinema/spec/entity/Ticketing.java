@@ -22,4 +22,8 @@ public class Ticketing {
     private int seats;
 
     private TicketingStatus status;
+
+    private String movieTitle;
+
+    private LocalDateTime scheduleShowAt;
 }

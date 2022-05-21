@@ -5,9 +5,72 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-<h1>사용자 정보 페이지입니다.</h1>
-<p>사용자 이름: <span th:text="${username}"></span></p>
-<p>사용자 권한: <span th:text="${authorities}"></span></p>
+    <h1 th:text="${username} + '님의 정보'">사용자님의 정보</h1>
+    <p>사용자 권한: <span th:text="${authorities}"></span></p>
+
+    <h2>예매한 내역</h2>
+    <p th:if="${reservedList.isEmpty()}">내역이 없습니다!</p>
+    <table th:if="${!reservedList.isEmpty()}" style="border-spacing: 1rem">
+        <tr>
+            <th>영화명</th>
+            <th>상영 시작 시각</th>
+            <th>예매 시각</th>
+            <th>예매 좌석 수</th>
+            <th>예매 취소</th>
+        </tr>
+        <tr th:each="item : ${reservedList}">
+            <td th:text="${item.getMovieTitle()}"></td>
+            <td th:text="${#temporals.format(item.getScheduleShowAt(), 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${#temporals.format(item.getRcAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td th:text="${item.getSeats()}"></td>
+            <td>
+                <form
+                    action="/ticketing/cancellation"
+                    onsubmit="return confirm('예매를 정말 취소하시겠습니까?')"
+                    method="post">
+                    <input type="hidden" name="id" th:value="${item.getId()}" />
+                    <button type="submit">예매 취소</button>
+                </form>
+            </td>
+        </tr>
+    </table>
+    <br />
+
+    <h2>취소한 내역</h2>
+    <p th:if="${cancelledList.isEmpty()}">내역이 없습니다!</p>
+    <table th:if="${!cancelledList.isEmpty()}" style="border-spacing: 1rem">
+        <tr>
+            <th>영화명</th>
+            <th>상영 시작 시각</th>
+            <th>예매 취소 시각</th>
+            <th>예매 좌석 수</th>
+        </tr>
+        <tr th:each="item : ${cancelledList}">
+            <td th:text="${item.getMovieTitle()}"></td>
+            <td th:text="${#temporals.format(item.getScheduleShowAt(), 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${#temporals.format(item.getRcAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td th:text="${item.getSeats()}"></td>
+        </tr>
+    </table>
+    <br />
+
+    <h2>지난 관람 내역</h2>
+    <p th:if="${watchedList.isEmpty()}">내역이 없습니다!</p>
+
+    <table th:if="${!watchedList.isEmpty()}" style="border-spacing: 1rem">
+        <tr>
+            <th>영화명</th>
+            <th>상영 시작 시각</th>
+            <th>예매 시각</th>
+            <th>예매 좌석 수</th>
+        </tr>
+        <tr th:each="item : ${watchedList}">
+            <td th:text="${item.getMovieTitle()}"></td>
+            <td th:text="${#temporals.format(item.getScheduleShowAt(), 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${#temporals.format(item.getRcAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
+            <td th:text="${item.getSeats()}"></td>
+        </tr>
+    </table>
 
 </body>
 </html>

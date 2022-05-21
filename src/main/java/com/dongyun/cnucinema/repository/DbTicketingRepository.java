@@ -42,7 +42,9 @@ public class DbTicketingRepository implements TicketingRepository {
 
     @Override
     public Optional<Ticketing> findById(Long id) {
-        String sql = "select * from Ticketing where id = :id";
+        String sql = "select * from Ticketing T " +
+                "JOIN Schedule S on T.sid = S.sid and T.id = :id " +
+                "JOIN Movie M on S.mid = M.mid ";
 
         List<Ticketing> result = jdbcTemplate.query(sql,
                 new MapSqlParameterSource("id", id),
@@ -53,7 +55,9 @@ public class DbTicketingRepository implements TicketingRepository {
 
     @Override
     public List<Ticketing> findBySid(Long sid) {
-        String sql = "select * from Ticketing where sid = :sid";
+        String sql = "select * from Ticketing T " +
+                "JOIN Schedule S on T.sid = S.sid and T.sid = :sid " +
+                "JOIN Movie M on S.mid = M.mid ";
 
         return jdbcTemplate.query(sql,
                 new MapSqlParameterSource("sid", sid),
@@ -62,7 +66,45 @@ public class DbTicketingRepository implements TicketingRepository {
 
     @Override
     public List<Ticketing> findByUsername(String username) {
-        String sql = "select * from Ticketing where username = :username";
+        String sql = "select * from Ticketing T " +
+                "JOIN Schedule S on T.sid = S.sid and T.username = :username " +
+                "JOIN Movie M on S.mid = M.mid ";
+
+        return jdbcTemplate.query(sql,
+                new MapSqlParameterSource("username", username),
+                ticketingRowMapper());
+    }
+
+    @Override
+    public List<Ticketing> findByUsernameAndReservedOrderByRcAtDesc(String username) {
+        String sql = "select * from Ticketing T " +
+                "JOIN Schedule S on T.sid = S.sid and T.username = :username and T.status = 'R' " +
+                "JOIN Movie M on S.mid = M.mid " +
+                "order by T.rc_at desc";
+
+        return jdbcTemplate.query(sql,
+                new MapSqlParameterSource("username", username),
+                ticketingRowMapper());
+    }
+
+    @Override
+    public List<Ticketing> findByUsernameAndCancelledOrderByRcAtDesc(String username) {
+        String sql = "select * from Ticketing T " +
+                "JOIN Schedule S on T.sid = S.sid and T.username = :username and T.status = 'C' " +
+                "JOIN Movie M on S.mid = M.mid " +
+                "order by T.rc_at desc";
+
+        return jdbcTemplate.query(sql,
+                new MapSqlParameterSource("username", username),
+                ticketingRowMapper());
+    }
+
+    @Override
+    public List<Ticketing> findByUsernameAndWatchedOrderByShowAtDesc(String username) {
+        String sql = "select * from Ticketing T " +
+                "JOIN Schedule S on T.sid = S.sid and T.username = :username and T.status = 'W' " +
+                "JOIN Movie M on S.mid = M.mid " +
+                "order by S.show_at desc";
 
         return jdbcTemplate.query(sql,
                 new MapSqlParameterSource("username", username),
@@ -110,6 +152,8 @@ public class DbTicketingRepository implements TicketingRepository {
                         .rcAt(LocalDateTime.parse(rs.getString("rc_at"), dateTimeFormatter))
                         .seats(rs.getInt("seats"))
                         .status(TicketingStatus.valueOf(rs.getString("status")))
+                        .movieTitle(rs.getString("title"))
+                        .scheduleShowAt(LocalDateTime.parse(rs.getString("show_at"), dateTimeFormatter))
                         .build();
     }
 }

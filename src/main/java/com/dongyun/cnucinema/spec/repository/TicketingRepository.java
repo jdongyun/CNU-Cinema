@@ -13,4 +13,10 @@ public interface TicketingRepository {
     List<Ticketing> findBySid(Long sid);
 
     List<Ticketing> findByUsername(String username);
+
+    List<Ticketing> findByUsernameAndReservedOrderByRcAtDesc(String username);
+
+    List<Ticketing> findByUsernameAndCancelledOrderByRcAtDesc(String username);
+
+    List<Ticketing> findByUsernameAndWatchedOrderByShowAtDesc(String username);
 }

@@ -10,5 +10,6 @@
     <p th:text="'상영 시작 시각: ' + ${#temporals.format(show_at, 'yyyy-MM-dd HH:mm')}"></p>
     <p th:text="'상영관 이름: ' + ${tname}"></p>
     <p th:text="'예매한 좌석 수: ' + ${reserved_seats}"></p>
+    <a href="/user">사용자 정보로 이동하기</a>
 </body>
 </html>
