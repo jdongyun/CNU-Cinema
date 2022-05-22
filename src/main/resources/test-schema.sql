@@ -75,7 +75,7 @@ create table Ticketing (
     status char  null,
     constraint Ticketing_ibfk_1 foreign key (username) references Customer (username),
     constraint Ticketing_ibfk_2 foreign key (sid) references Schedule (sid),
-    constraint status check (`status` in ('R', 'C', 'W'))
+    constraint status check (`status` in ('R', 'C'))
 );
 
 create index sid

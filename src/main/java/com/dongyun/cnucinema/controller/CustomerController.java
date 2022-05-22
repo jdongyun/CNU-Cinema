@@ -26,9 +26,9 @@ public class CustomerController {
         model.addAttribute("username", username);
         model.addAttribute("authorities", Arrays.toString(auth.getAuthorities().toArray()));
 
-        model.addAttribute("reservedList", ticketingService.findByUsernameAndStatus(username, TicketingStatus.R));
-        model.addAttribute("cancelledList", ticketingService.findByUsernameAndStatus(username, TicketingStatus.C));
-        model.addAttribute("watchedList", ticketingService.findByUsernameAndStatus(username, TicketingStatus.W));
+        model.addAttribute("reservedList", ticketingService.findByUsernameAndReserved(username));
+        model.addAttribute("cancelledList", ticketingService.findByUsernameAndCancelled(username));
+        model.addAttribute("watchedList", ticketingService.findByUsernameAndWatched(username));
 
         return "user/index";
     }

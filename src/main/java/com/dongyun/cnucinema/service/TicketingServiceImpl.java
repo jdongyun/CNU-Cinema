@@ -74,8 +74,11 @@ public class TicketingServiceImpl implements TicketingService {
         if (!ticketing.getUsername().equals(username)) {
             throw new IllegalStateException("본인의 예매 내역이 아닙니다.");
         }
-        if (ticketing.getStatus() != TicketingStatus.R) {
-            throw new IllegalStateException("이미 취소되었거나 관람이 완료된 내역입니다.");
+        if (ticketing.getStatus() == TicketingStatus.C) {
+            throw new IllegalStateException("이미 취소된 내역입니다.");
+        }
+        if (LocalDateTime.now().isAfter(ticketing.getScheduleShowAt())) {
+            throw new IllegalStateException("이미 관람이 완료된 내역입니다.");
         }
 
         TicketingDto dto = TicketingDto.create(ticketing);
@@ -101,17 +104,20 @@ public class TicketingServiceImpl implements TicketingService {
     }
 
     @Override
-    public List<Ticketing> findByUsernameAndStatus(String username, TicketingStatus status) {
-        switch (status) {
-            case R:
-                return ticketingRepository.findByUsernameAndReservedOrderByRcAtDesc(username);
-            case C:
-                return ticketingRepository.findByUsernameAndCancelledOrderByRcAtDesc(username);
-            case W:
-                return ticketingRepository.findByUsernameAndWatchedOrderByShowAtDesc(username);
-        }
-        return new ArrayList<>();
+    public List<Ticketing> findByUsernameAndReserved(String username) {
+        return ticketingRepository.findByUsernameAndReservedOrderByRcAtDesc(username);
     }
+
+    @Override
+    public List<Ticketing> findByUsernameAndCancelled(String username) {
+        return ticketingRepository.findByUsernameAndCancelledOrderByRcAtDesc(username);
+    }
+
+    @Override
+    public List<Ticketing> findByUsernameAndWatched(String username) {
+        return ticketingRepository.findByUsernameAndWatchedOrderByShowAtDesc(username);
+    }
+
 
     private void validateRemainSeats(Schedule schedule, int seats) {
         if (schedule.getRemainSeats() < seats) {

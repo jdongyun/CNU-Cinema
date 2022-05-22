@@ -19,5 +19,9 @@ public interface TicketingService {
 
     List<Ticketing> findByUsername(String username);
 
-    List<Ticketing> findByUsernameAndStatus(String username, TicketingStatus status);
+    List<Ticketing> findByUsernameAndReserved(String username);
+
+    List<Ticketing> findByUsernameAndCancelled(String username);
+
+    List<Ticketing> findByUsernameAndWatched(String username);
 }

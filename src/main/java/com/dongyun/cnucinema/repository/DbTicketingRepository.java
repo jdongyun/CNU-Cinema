@@ -77,13 +77,16 @@ public class DbTicketingRepository implements TicketingRepository {
 
     @Override
     public List<Ticketing> findByUsernameAndReservedOrderByRcAtDesc(String username) {
+        LocalDateTime now = LocalDateTime.now();
+
         String sql = "select * from Ticketing T " +
-                "JOIN Schedule S on T.sid = S.sid and T.username = :username and T.status = 'R' " +
+                "JOIN Schedule S on T.sid = S.sid and T.username = :username and T.status = 'R' and S.show_at > :date " +
                 "JOIN Movie M on S.mid = M.mid " +
                 "order by T.rc_at desc";
 
         return jdbcTemplate.query(sql,
-                new MapSqlParameterSource("username", username),
+                new MapSqlParameterSource("username", username)
+                        .addValue("date", now),
                 ticketingRowMapper());
     }
 
@@ -101,13 +104,16 @@ public class DbTicketingRepository implements TicketingRepository {
 
     @Override
     public List<Ticketing> findByUsernameAndWatchedOrderByShowAtDesc(String username) {
+        LocalDateTime now = LocalDateTime.now();
+
         String sql = "select * from Ticketing T " +
-                "JOIN Schedule S on T.sid = S.sid and T.username = :username and T.status = 'W' " +
+                "JOIN Schedule S on T.sid = S.sid and T.username = :username and T.status = 'R' and S.show_at <= :date " +
                 "JOIN Movie M on S.mid = M.mid " +
                 "order by S.show_at desc";
 
         return jdbcTemplate.query(sql,
-                new MapSqlParameterSource("username", username),
+                new MapSqlParameterSource("username", username)
+                        .addValue("date", now),
                 ticketingRowMapper());
     }
 
