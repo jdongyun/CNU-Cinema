@@ -40,13 +40,13 @@ class DbScheduleRepositoryTest implements BaseIntegrityTest {
         // given
         ticketingRepository.save(Ticketing.builder()
                 .username("test1").sid(1L).rcAt(LocalDateTime.now())
-                .seats(7).status(TicketingStatus.W).build());
+                .seats(7).status(TicketingStatus.R).build());
         ticketingRepository.save(Ticketing.builder()
                 .username("test2").sid(1L).rcAt(LocalDateTime.now())
-                .seats(5).status(TicketingStatus.W).build());
+                .seats(5).status(TicketingStatus.R).build());
         ticketingRepository.save(Ticketing.builder()
                 .username("test3").sid(1L).rcAt(LocalDateTime.now())
-                .seats(2).status(TicketingStatus.W).build());
+                .seats(2).status(TicketingStatus.R).build());
 
         // when
         Schedule schedule1 = scheduleRepository.findBySid(1L).get();

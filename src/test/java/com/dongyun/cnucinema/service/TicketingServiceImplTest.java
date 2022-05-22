@@ -9,9 +9,12 @@ import com.dongyun.cnucinema.spec.enums.TicketingStatus;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.mockito.MockedStatic;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 class TicketingServiceImplTest implements BaseIntegrityTest {
 
@@ -134,44 +137,88 @@ class TicketingServiceImplTest implements BaseIntegrityTest {
     }
 
     @Test
-    @DisplayName("이미 취소되었거나 관람이 완료된 예매 내역을 취소할 수 없어야 합니다.")
-    void cancelComparingStatus() {
-        // given
-        TicketingCompletionRequest completionRequest = new TicketingCompletionRequest();
-        completionRequest.setSid(1L);
-        completionRequest.setSeats(5);
-        Long id = ticketingService.reserve(completionRequest, "test1");
+    @DisplayName("이미 취소된 예매 내역을 취소할 수 없어야 합니다.")
+    void cancelAlreadyCancelled() {
+        try (MockedStatic<LocalDateTime> mock = Mockito.mockStatic(LocalDateTime.class, Mockito.CALLS_REAL_METHODS)) {
+            // given
+            LocalDateTime now = LocalDateTime.of(2022, 5, 9, 9, 30, 0);
+            mock.when(LocalDateTime::now).thenReturn(now);
 
-        TicketingCancellationRequest dto = new TicketingCancellationRequest();
-        dto.setId(id);
-        ticketingService.cancel(dto, "test1");
+            TicketingCompletionRequest completionRequest = new TicketingCompletionRequest();
+            completionRequest.setSid(1L);
+            completionRequest.setSeats(5);
+            Long id = ticketingService.reserve(completionRequest, "test1");
 
-        TicketingCancellationRequest retryingDto = new TicketingCancellationRequest();
-        retryingDto.setId(id);
+            TicketingCancellationRequest dto = new TicketingCancellationRequest();
+            dto.setId(id);
+            ticketingService.cancel(dto, "test1");
 
-        // when
+            TicketingCancellationRequest retryingDto = new TicketingCancellationRequest();
+            retryingDto.setId(id);
 
-        // then
-        Assertions.assertThatThrownBy(() -> ticketingService.cancel(retryingDto, "test1"))
-                .hasMessage("이미 취소되었거나 관람이 완료된 내역입니다.");
+            // when
+
+            // then
+            Assertions.assertThatThrownBy(() -> ticketingService.cancel(retryingDto, "test1"))
+                    .hasMessage("이미 취소된 내역입니다.");
+
+        }
+    }
+
+    @Test
+    @DisplayName("이미 관람이 완료된 예매 내역을 취소할 수 없어야 합니다.")
+    void cancelAlreadyWatched() {
+        Long ticketingId;
+        // 예매는 상영 시작 시각 전에.
+        try (MockedStatic<LocalDateTime> mock = Mockito.mockStatic(LocalDateTime.class, Mockito.CALLS_REAL_METHODS)) {
+            // given
+            LocalDateTime now = LocalDateTime.of(2022, 5, 9, 12, 30, 0);
+            mock.when(LocalDateTime::now).thenReturn(now);
+
+            TicketingCompletionRequest completionRequest = new TicketingCompletionRequest();
+            completionRequest.setSid(2L);
+            completionRequest.setSeats(5);
+            ticketingId = ticketingService.reserve(completionRequest, "test1");
+        }
+
+        // 취소는 상영 시작 시각 이후에.
+        try (MockedStatic<LocalDateTime> mock = Mockito.mockStatic(LocalDateTime.class, Mockito.CALLS_REAL_METHODS)) {
+            // given
+            LocalDateTime now = LocalDateTime.of(2022, 5, 9, 13, 30, 0);
+            mock.when(LocalDateTime::now).thenReturn(now);
+
+            TicketingCancellationRequest dto = new TicketingCancellationRequest();
+            dto.setId(ticketingId);
+
+            // when
+
+            // then
+            Assertions.assertThatThrownBy(() -> ticketingService.cancel(dto, "test1"))
+                    .hasMessage("이미 관람이 완료된 내역입니다.");
+        }
     }
 
     @Test
     @DisplayName("본인의 예매 내역을 정상적으로 취소할 수 있어야 합니다.")
     void cancel() {
-        // given
-        TicketingCompletionRequest completionRequest = new TicketingCompletionRequest();
-        completionRequest.setSid(1L);
-        completionRequest.setSeats(5);
-        Long id = ticketingService.reserve(completionRequest, "test1");
+        try (MockedStatic<LocalDateTime> mock = Mockito.mockStatic(LocalDateTime.class, Mockito.CALLS_REAL_METHODS)) {
+            // given
+            LocalDateTime now = LocalDateTime.of(2022, 5, 9, 9, 0, 0);
+            mock.when(LocalDateTime::now).thenReturn(now);
 
-        TicketingCancellationRequest dto = new TicketingCancellationRequest();
-        dto.setId(id);
+            TicketingCompletionRequest completionRequest = new TicketingCompletionRequest();
+            completionRequest.setSid(1L);
+            completionRequest.setSeats(5);
+            Long id = ticketingService.reserve(completionRequest, "test1");
 
-        // when
-        ticketingService.cancel(dto, "test1");
+            TicketingCancellationRequest dto = new TicketingCancellationRequest();
+            dto.setId(id);
 
-        // then
-        Assertions.assertThat(ticketingService.findById(id).get().getStatus()).isEqualTo(TicketingStatus.C);
+            // when
+            ticketingService.cancel(dto, "test1");
+
+            // then
+            Assertions.assertThat(ticketingService.findById(id).get().getStatus()).isEqualTo(TicketingStatus.C);
+        }
     }
 }
