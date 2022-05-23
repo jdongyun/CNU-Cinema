@@ -7,6 +7,18 @@
 <body>
     <h1 th:text="${username} + '님의 정보'">사용자님의 정보</h1>
     <p>사용자 권한: <span th:text="${authorities}"></span></p>
+    <br />
+
+    <form action="" method="get">
+        <label>
+            <input type="date" name="start_date" th:value="${startDate}" />
+        </label>
+        ~
+        <label>
+            <input type="date" name="end_date" th:value="${endDate}" />
+        </label>
+        <button type="submit">검색</button>
+    </form>
 
     <h2>예매한 내역</h2>
     <p th:if="${reservedList.isEmpty()}">내역이 없습니다!</p>

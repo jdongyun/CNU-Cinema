@@ -117,6 +117,59 @@ public class DbTicketingRepository implements TicketingRepository {
                 ticketingRowMapper());
     }
 
+    @Override
+    public List<Ticketing> findByUsernameAndReservedAndRcAtBetweenOrderByRcAtDesc(String username, LocalDateTime startAt, LocalDateTime endAt) {
+        LocalDateTime now = LocalDateTime.now();
+
+        String sql = "select * from Ticketing T " +
+                "JOIN Schedule S on T.sid = S.sid and T.username = :username and T.status = 'R' and S.show_at > :date " +
+                "JOIN Movie M on S.mid = M.mid " +
+                "where T.rc_at between :start_at and :end_at " +
+                "order by T.rc_at desc";
+
+        return jdbcTemplate.query(sql,
+                new MapSqlParameterSource("username", username)
+                        .addValue("date", now)
+                        .addValue("start_at", startAt)
+                        .addValue("end_at", endAt),
+                ticketingRowMapper());
+    }
+
+    @Override
+    public List<Ticketing> findByUsernameAndCancelledAndRcAtBetweenOrderByRcAtDesc(String username, LocalDateTime startAt, LocalDateTime endAt) {
+        LocalDateTime now = LocalDateTime.now();
+
+        String sql = "select * from Ticketing T " +
+                "JOIN Schedule S on T.sid = S.sid and T.username = :username and T.status = 'C' " +
+                "JOIN Movie M on S.mid = M.mid " +
+                "where T.rc_at between :start_at and :end_at " +
+                "order by T.rc_at desc";
+
+        return jdbcTemplate.query(sql,
+                new MapSqlParameterSource("username", username)
+                        .addValue("start_at", startAt)
+                        .addValue("end_at", endAt),
+                ticketingRowMapper());
+    }
+
+    @Override
+    public List<Ticketing> findByUsernameAndWatchedAndRcAtBetweenOrderByShowAtDesc(String username, LocalDateTime startAt, LocalDateTime endAt) {
+        LocalDateTime now = LocalDateTime.now();
+
+        String sql = "select * from Ticketing T " +
+                "JOIN Schedule S on T.sid = S.sid and T.username = :username and T.status = 'R' and S.show_at <= :date " +
+                "JOIN Movie M on S.mid = M.mid " +
+                "where T.rc_at between :start_at and :end_at " +
+                "order by S.show_at desc";
+
+        return jdbcTemplate.query(sql,
+                new MapSqlParameterSource("username", username)
+                        .addValue("date", now)
+                        .addValue("start_at", startAt)
+                        .addValue("end_at", endAt),
+                ticketingRowMapper());
+    }
+
     private Long insert(Ticketing ticketing) {
         SimpleJdbcInsert insert = new SimpleJdbcInsert(dataSource)
                 .withTableName("Ticketing")

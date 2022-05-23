@@ -171,4 +171,57 @@ class DbTicketingRepositoryTest implements BaseIntegrityTest {
             Assertions.assertThat(ticketings.stream().findFirst().get().getSeats()).isEqualTo(5);
         }
     }
+
+    @Test
+    @DisplayName("사용자 별 예매 완료한 기간별 티켓팅의 정보의 목록을 정상적으로 불러와야 합니다.")
+    void findByUsernameAndReservedAndRcAtBetweenOrderByRcAtDesc() {
+        try (MockedStatic<LocalDateTime> mock = Mockito.mockStatic(LocalDateTime.class, Mockito.CALLS_REAL_METHODS)) {
+            // given
+            LocalDateTime now = LocalDateTime.of(2022, 5, 9, 9, 30, 0);
+            mock.when(LocalDateTime::now).thenReturn(now);
+
+            // when
+            List<Ticketing> ticketings = ticketingRepository.findByUsernameAndReservedAndRcAtBetweenOrderByRcAtDesc(
+                    "test1", LocalDateTime.of(2022, 5, 9, 0, 0, 0),
+                    LocalDateTime.of(2022, 5, 9, 0, 0, 4));
+
+            // then
+            Assertions.assertThat(ticketings).hasSize(2);
+            Assertions.assertThat(ticketings.stream().findFirst().get().getSeats()).isEqualTo(3);
+        }
+    }
+
+    @Test
+    @DisplayName("사용자 별 예매 취소한 기간별 티켓팅의 정보의 목록을 정상적으로 불러와야 합니다.")
+    void findByUsernameAndCancelledRcAtBetweenOrderByRcAtDesc() {
+        // given
+
+        // when
+        List<Ticketing> ticketings = ticketingRepository.findByUsernameAndCancelledAndRcAtBetweenOrderByRcAtDesc(
+                "test1", LocalDateTime.of(2022, 5, 9, 0, 0, 0),
+                LocalDateTime.of(2022, 5, 9, 0, 0, 6));
+
+        // then
+        Assertions.assertThat(ticketings).hasSize(2);
+        Assertions.assertThat(ticketings.stream().findFirst().get().getSeats()).isEqualTo(1);
+    }
+
+    @Test
+    @DisplayName("사용자 별 관람 완료한 기간별 티켓팅의 정보의 목록을 정상적으로 불러와야 합니다.")
+    void findByUsernameAndWatchedRcAtBetweenOrderByShowAtDesc() {
+        try (MockedStatic<LocalDateTime> mock = Mockito.mockStatic(LocalDateTime.class, Mockito.CALLS_REAL_METHODS)) {
+            // given
+            LocalDateTime now = LocalDateTime.of(2022, 5, 9, 13, 30, 0);
+            mock.when(LocalDateTime::now).thenReturn(now);
+
+            // when
+            List<Ticketing> ticketings = ticketingRepository.findByUsernameAndWatchedAndRcAtBetweenOrderByShowAtDesc(
+                    "test1", LocalDateTime.of(2022, 5, 9, 0, 0, 0),
+                    LocalDateTime.of(2022, 5, 9, 0, 0, 5));
+
+            // then
+            Assertions.assertThat(ticketings).hasSize(3);
+            Assertions.assertThat(ticketings.stream().findFirst().get().getSeats()).isEqualTo(5);
+        }
+    }
 }

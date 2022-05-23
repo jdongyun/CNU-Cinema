@@ -119,6 +119,21 @@ public class TicketingServiceImpl implements TicketingService {
         return ticketingRepository.findByUsernameAndWatchedOrderByShowAtDesc(username);
     }
 
+    @Override
+    public List<Ticketing> findByUsernameAndReservedAndRcAtBetween(String username, LocalDateTime startAt, LocalDateTime endAt) {
+        return ticketingRepository.findByUsernameAndReservedAndRcAtBetweenOrderByRcAtDesc(username, startAt, endAt);
+    }
+
+    @Override
+    public List<Ticketing> findByUsernameAndCancelledAndRcAtBetween(String username, LocalDateTime startAt, LocalDateTime endAt) {
+        return ticketingRepository.findByUsernameAndCancelledAndRcAtBetweenOrderByRcAtDesc(username, startAt, endAt);
+    }
+
+    @Override
+    public List<Ticketing> findByUsernameAndWatchedAndRcAtBetween(String username, LocalDateTime startAt, LocalDateTime endAt) {
+        return ticketingRepository.findByUsernameAndWatchedAndRcAtBetweenOrderByShowAtDesc(username, startAt, endAt);
+    }
+
     private void validateSchedule(Schedule schedule) {
         if (!schedule.getShowAt().isAfter(LocalDateTime.now())) {
             throw new IllegalStateException("상영 시작 시각이 지나 예매가 불가능합니다.");

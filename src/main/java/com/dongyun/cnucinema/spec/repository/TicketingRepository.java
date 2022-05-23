@@ -2,6 +2,7 @@ package com.dongyun.cnucinema.spec.repository;
 
 import com.dongyun.cnucinema.spec.entity.Ticketing;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,4 +20,10 @@ public interface TicketingRepository {
     List<Ticketing> findByUsernameAndCancelledOrderByRcAtDesc(String username);
 
     List<Ticketing> findByUsernameAndWatchedOrderByShowAtDesc(String username);
+
+    List<Ticketing> findByUsernameAndReservedAndRcAtBetweenOrderByRcAtDesc(String username, LocalDateTime startAt, LocalDateTime endAt);
+
+    List<Ticketing> findByUsernameAndCancelledAndRcAtBetweenOrderByRcAtDesc(String username, LocalDateTime startAt, LocalDateTime endAt);
+
+    List<Ticketing> findByUsernameAndWatchedAndRcAtBetweenOrderByShowAtDesc(String username, LocalDateTime startAt, LocalDateTime endAt);
 }
