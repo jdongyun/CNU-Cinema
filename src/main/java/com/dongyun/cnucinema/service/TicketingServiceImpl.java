@@ -51,6 +51,7 @@ public class TicketingServiceImpl implements TicketingService {
         Movie movie = movieRepository.findByMid(schedule.getMid()).orElseThrow(() -> {
             throw new IllegalStateException("해당하는 영화가 없습니다.");
         });
+        validateSchedule(schedule);
         validateAge(customer, movie);
         validateRemainSeats(schedule, request.getSeats());
 
@@ -118,6 +119,11 @@ public class TicketingServiceImpl implements TicketingService {
         return ticketingRepository.findByUsernameAndWatchedOrderByShowAtDesc(username);
     }
 
+    private void validateSchedule(Schedule schedule) {
+        if (!schedule.getShowAt().isAfter(LocalDateTime.now())) {
+            throw new IllegalStateException("상영 시작 시각이 지나 예매가 불가능합니다.");
+        }
+    }
 
     private void validateRemainSeats(Schedule schedule, int seats) {
         if (schedule.getRemainSeats() < seats) {

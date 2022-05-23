@@ -25,37 +25,47 @@ class TicketingServiceImplTest implements BaseIntegrityTest {
     @Test
     @DisplayName("10자리를 초과하는 좌석은 티켓팅이 불가능하여야 합니다.")
     void maximumSeats() {
-        // given
-        TicketingCompletionRequest request = new TicketingCompletionRequest();
-        request.setSid(1L);
-        request.setSeats(11);
+        try (MockedStatic<LocalDateTime> mock = Mockito.mockStatic(LocalDateTime.class, Mockito.CALLS_REAL_METHODS)) {
+            // given
+            LocalDateTime now = LocalDateTime.of(2022, 5, 9, 9, 10, 0);
+            mock.when(LocalDateTime::now).thenReturn(now);
 
-        // when
+            TicketingCompletionRequest request = new TicketingCompletionRequest();
+            request.setSid(1L);
+            request.setSeats(11);
 
-        // then
-        Assertions.assertThatThrownBy(() ->
-                ticketingService.reserve(request, "test1"))
-                .hasMessageContaining("좌석");
+            // when
+
+            // then
+            Assertions.assertThatThrownBy(() ->
+                            ticketingService.reserve(request, "test1"))
+                    .hasMessageContaining("좌석");
+        }
     }
 
     @Test
     @DisplayName("사용자의 연령보다 시청 가능 연령이 높은 영화는 티켓팅이 불가능하여야 합니다.")
     void minimumAge() {
-        // given
-        Customer prevCustomer = customerService.findOne("test1").get();
-        CustomerDto customerDto = CustomerDto.create(prevCustomer);
-        TicketingCompletionRequest request = new TicketingCompletionRequest();
+        try (MockedStatic<LocalDateTime> mock = Mockito.mockStatic(LocalDateTime.class, Mockito.CALLS_REAL_METHODS)) {
+            // given
+            LocalDateTime now = LocalDateTime.of(2022, 5, 9, 9, 10, 0);
+            mock.when(LocalDateTime::now).thenReturn(now);
 
-        // when
-        customerDto.setBirthDate(LocalDate.now().minusYears(1));
-        customerService.save(customerDto);
-        request.setSid(1L);
-        request.setSeats(5);
+            Customer prevCustomer = customerService.findOne("test1").get();
+            CustomerDto customerDto = CustomerDto.create(prevCustomer);
+            TicketingCompletionRequest request = new TicketingCompletionRequest();
 
-        // then
-        Assertions.assertThatThrownBy(() ->
-                        ticketingService.reserve(request, "test1"))
-                .hasMessageContaining("연령");
+            // when
+            customerDto.setBirthDate(LocalDate.now().minusYears(1));
+            customerService.save(customerDto);
+            request.setSid(1L);
+            request.setSeats(5);
+
+            // then
+            Assertions.assertThatThrownBy(() ->
+                            ticketingService.reserve(request, "test1"))
+                    .hasMessageContaining("연령");
+        }
     }
 
     @Test
@@ -89,18 +99,44 @@ class TicketingServiceImplTest implements BaseIntegrityTest {
     }
 
     @Test
+    @DisplayName("상영 시작 시각이 지난 스케줄로는 티켓팅이 불가능하여야 합니다.")
+    void scheduleBeforeNow() {
+        try (MockedStatic<LocalDateTime> mock = Mockito.mockStatic(LocalDateTime.class, Mockito.CALLS_REAL_METHODS)) {
+            // given
+            LocalDateTime now = LocalDateTime.of(2022, 5, 9, 10, 10, 0);
+            mock.when(LocalDateTime::now).thenReturn(now);
+
+            TicketingCompletionRequest dto = new TicketingCompletionRequest();
+            dto.setSid(1L);
+            dto.setSeats(5);
+
+            // when
+
+            // then
+            Assertions.assertThatThrownBy(() ->
+                            ticketingService.reserve(dto, "test1"))
+                    .hasMessage("상영 시작 시각이 지나 예매가 불가능합니다.");
+        }
+    }
+
+    @Test
     @DisplayName("사용자가 정상적으로 티켓팅을 할 수 있어야 합니다.")
     void reserve() {
-        // given
-        TicketingCompletionRequest dto = new TicketingCompletionRequest();
-        dto.setSid(1L);
-        dto.setSeats(5);
+        try (MockedStatic<LocalDateTime> mock = Mockito.mockStatic(LocalDateTime.class, Mockito.CALLS_REAL_METHODS)) {
+            // given
+            LocalDateTime now = LocalDateTime.of(2022, 5, 9, 9, 0, 0);
+            mock.when(LocalDateTime::now).thenReturn(now);
 
-        // when
-        Long id = ticketingService.reserve(dto, "test1");
+            TicketingCompletionRequest dto = new TicketingCompletionRequest();
+            dto.setSid(1L);
+            dto.setSeats(5);
 
-        // then
-        Assertions.assertThat(ticketingService.findById(id).get().getSid()).isEqualTo(dto.getSid());
+            // when
+            Long id = ticketingService.reserve(dto, "test1");
+
+            // then
+            Assertions.assertThat(ticketingService.findById(id).get().getSid()).isEqualTo(dto.getSid());
+        }
     }
 
     @Test
@@ -120,20 +156,25 @@ class TicketingServiceImplTest implements BaseIntegrityTest {
     @Test
     @DisplayName("다른 사용자의 예매 내역을 취소할 수 없어야 합니다.")
     void cancelOtherUsers() {
-        // given
-        TicketingCompletionRequest completionRequest = new TicketingCompletionRequest();
-        completionRequest.setSid(1L);
-        completionRequest.setSeats(5);
-        Long id = ticketingService.reserve(completionRequest, "test1");
+        try (MockedStatic<LocalDateTime> mock = Mockito.mockStatic(LocalDateTime.class, Mockito.CALLS_REAL_METHODS)) {
+            // given
+            LocalDateTime now = LocalDateTime.of(2022, 5, 9, 9, 0, 0);
+            mock.when(LocalDateTime::now).thenReturn(now);
 
-        TicketingCancellationRequest dto = new TicketingCancellationRequest();
-        dto.setId(id);
+            TicketingCompletionRequest completionRequest = new TicketingCompletionRequest();
+            completionRequest.setSid(1L);
+            completionRequest.setSeats(5);
+            Long id = ticketingService.reserve(completionRequest, "test1");
 
-        // when
+            TicketingCancellationRequest dto = new TicketingCancellationRequest();
+            dto.setId(id);
 
-        // then
-        Assertions.assertThatThrownBy(() -> ticketingService.cancel(dto, "test2"))
-                .hasMessage("본인의 예매 내역이 아닙니다.");
+            // when
+
+            // then
+            Assertions.assertThatThrownBy(() -> ticketingService.cancel(dto, "test2"))
+                    .hasMessage("본인의 예매 내역이 아닙니다.");
+        }
     }
 
     @Test
