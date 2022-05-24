@@ -26,4 +26,8 @@ public class Movie {
     private List<Actor> actors;
 
     private List<Schedule> schedules;
+
+    private int totalReservedSeats;
+
+    private int totalWatchedSeats;
 }

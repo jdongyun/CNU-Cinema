@@ -32,9 +32,28 @@ public class DbMovieRepository implements MovieRepository {
 
     @Override
     public Optional<Movie> findByMid(Long id) {
-        String sql = "select * from Movie m join Actor a on m.mid = a.mid where m.mid = :mid";
+        LocalDateTime now = LocalDateTime.now();
+
+        String sql = """
+                select M.*, A.*,
+                    IFNULL(S.total_reserved, 0) total_reserved_seats,
+                    IFNULL(S.total_watched, 0) total_watched_seats
+                from Movie M
+                    join Actor A on M.mid = A.mid
+                    left join (
+                        select
+                            S.mid,
+                            SUM(CASE WHEN S.show_at > :now and T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
+                            SUM(CASE WHEN S.show_at <= :now and T.status = 'R' THEN T.seats ELSE 0 END) total_watched
+                        from Schedule S
+                                 left join Ticketing T on T.sid = S.sid
+                        group by S.mid
+                    ) S on S.mid = M.mid
+                where M.mid = :mid
+                """;
         List<Movie> result = jdbcTemplate.query(sql,
-                new MapSqlParameterSource("mid", id),
+                new MapSqlParameterSource("mid", id)
+                        .addValue("now", now),
                 movieRowWithActorsMapper());
 
         return result.stream().findAny();
@@ -42,35 +61,114 @@ public class DbMovieRepository implements MovieRepository {
 
     @Override
     public List<Movie> findByTitleContains(String title) {
-        String sql = "select * from Movie join Actor A on Movie.mid = A.mid where title like :title";
+        LocalDateTime now = LocalDateTime.now();
+
+        String sql = """
+                select M.*, A.*,
+                    IFNULL(S.total_reserved, 0) total_reserved_seats,
+                    IFNULL(S.total_watched, 0) total_watched_seats
+                from Movie M
+                    join Actor A on M.mid = A.mid
+                    left join (
+                        select
+                            S.mid,
+                            SUM(CASE WHEN S.show_at > :now and T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
+                            SUM(CASE WHEN S.show_at <= :now and T.status = 'R' THEN T.seats ELSE 0 END) total_watched
+                        from Schedule S
+                            left join Ticketing T on T.sid = S.sid
+                        group by S.mid
+                    ) S on S.mid = M.mid
+                where M.title LIKE :title
+                """;
         return jdbcTemplate.query(sql,
-                new MapSqlParameterSource("title", "%" + title + "%"),
+                new MapSqlParameterSource("title", "%" + title + "%")
+                        .addValue("now", now),
                 movieRowWithActorsExtractor());
     }
 
     @Override
     public List<Movie> findByScheduleShowAtDate(LocalDate showAtDate) {
-        String sql = "select * from Movie join Schedule S on Movie.mid = S.mid where DATE(S.show_at) = :show_at_date";
+        LocalDateTime now = LocalDateTime.now();
+
+        String sql = """
+                select M.*, A.*,
+                    IFNULL(S.total_reserved, 0) total_reserved_seats,
+                    IFNULL(S.total_watched, 0) total_watched_seats
+                from Movie M
+                    join Actor A on M.mid = A.mid
+                    left join (
+                        select
+                            S.mid,
+                            SUM(CASE WHEN S.show_at > :now and T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
+                            SUM(CASE WHEN S.show_at <= :now and T.status = 'R' THEN T.seats ELSE 0 END) total_watched
+                        from Schedule S
+                            left join Ticketing T on T.sid = S.sid
+                        group by S.mid
+                    ) S on S.mid = M.mid
+                where M.mid in (select mid from Schedule where DATE(show_at) = :show_at_date)
+                """;
         return jdbcTemplate.query(sql,
-                new MapSqlParameterSource("show_at_date", showAtDate.toString()),
-                movieRowWithSchedulesExtractor());
+                new MapSqlParameterSource("show_at_date", showAtDate.toString())
+                        .addValue("now", now),
+                movieRowWithActorsExtractor());
     }
 
     @Override
     public List<Movie> findByTitleContainsAndScheduleShowAtDate(String title, LocalDate showAtDate) {
-        String sql = "select * from Movie join Schedule S on Movie.mid = S.mid where Movie.title LIKE :title and DATE(S.show_at) = :show_at_date";
+        LocalDateTime now = LocalDateTime.now();
+
+        String sql = """
+                select M.*, A.*,
+                    IFNULL(S.total_reserved, 0) total_reserved_seats,
+                    IFNULL(S.total_watched, 0) total_watched_seats
+                from Movie M
+                    join Actor A on M.mid = A.mid
+                    left join (
+                        select
+                            S.mid,
+                            SUM(CASE WHEN S.show_at > :now and T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
+                            SUM(CASE WHEN S.show_at <= :now and T.status = 'R' THEN T.seats ELSE 0 END) total_watched
+                        from Schedule S
+                            left join Ticketing T on T.sid = S.sid
+                        group by S.mid
+                    ) S on S.mid = M.mid
+                where 
+                    M.title LIKE :title and
+                    S.mid = M.mid and
+                    M.mid in (select mid from Schedule where DATE(show_at) = :show_at_date)
+                """;
         MapSqlParameterSource params = new MapSqlParameterSource();
         params.addValue("title", "%" + title + "%");
         params.addValue("show_at_date", showAtDate.toString());
+        params.addValue("now", now);
 
-        return jdbcTemplate.query(sql, params, movieRowWithSchedulesExtractor());
+        return jdbcTemplate.query(sql, params, movieRowWithActorsExtractor());
     }
 
 
     @Override
     public List<Movie> findAll() {
-        String sql = "select * from Movie join Actor A on Movie.mid = A.mid";
-        return jdbcTemplate.query(sql, movieRowWithActorsExtractor());
+        LocalDateTime now = LocalDateTime.now();
+
+        String sql = """
+                select M.*, A.*,
+                    IFNULL(S.total_reserved, 0) total_reserved_seats,
+                    IFNULL(S.total_watched, 0) total_watched_seats
+                from Movie M
+                    join Actor A on M.mid = A.mid
+                    left join (
+                        select
+                            S.mid,
+                            SUM(CASE WHEN S.show_at > :now and T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
+                            SUM(CASE WHEN S.show_at <= :now and T.status = 'R' THEN T.seats ELSE 0 END) total_watched
+                        from Schedule S
+                            left join Ticketing T on T.sid = S.sid
+                        group by S.mid
+                    ) S on S.mid = M.mid
+                """;
+        return jdbcTemplate.query(sql,
+                new MapSqlParameterSource("now", now),
+                movieRowWithActorsExtractor());
     }
 
     private RowMapper<Movie> movieRowWithActorsMapper() {
@@ -83,7 +181,8 @@ public class DbMovieRepository implements MovieRepository {
                     .length(rs.getInt("length"))
                     .director(rs.getString("director"))
                     .actors(new ArrayList<>())
-                    .schedules(new ArrayList<>())
+                    .totalReservedSeats(rs.getInt("total_reserved_seats"))
+                    .totalWatchedSeats(rs.getInt("total_watched_seats"))
                     .build();
 
             for (; !rs.isAfterLast(); rs.next()) {
@@ -110,7 +209,8 @@ public class DbMovieRepository implements MovieRepository {
                         .length(rs.getInt("length"))
                         .director(rs.getString("director"))
                         .actors(new ArrayList<>())
-                        .schedules(new ArrayList<>())
+                        .totalReservedSeats(rs.getInt("total_reserved_seats"))
+                        .totalWatchedSeats(rs.getInt("total_watched_seats"))
                         .build();
 
                 for (; !rs.isAfterLast(); rs.next()) {
@@ -118,39 +218,6 @@ public class DbMovieRepository implements MovieRepository {
                     movie.getActors().add(Actor.builder()
                             .mid(rs.getLong("mid"))
                             .name(rs.getString("name"))
-                            .build());
-                }
-                movies.add(movie);
-            }
-
-            return movies;
-        };
-    }
-
-    private ResultSetExtractor<List<Movie>> movieRowWithSchedulesExtractor() {
-        return (rs) -> {
-            List<Movie> movies = new ArrayList<>();
-            if (!rs.next()) return movies;
-
-            while (!rs.isAfterLast()) {
-                Movie movie = Movie.builder()
-                        .mid(rs.getLong("mid"))
-                        .title(rs.getString("title"))
-                        .openDay(LocalDate.parse(rs.getString("open_day")))
-                        .rating(MovieRating.valueOf(rs.getString("rating")))
-                        .length(rs.getInt("length"))
-                        .director(rs.getString("director"))
-                        .actors(new ArrayList<>())
-                        .schedules(new ArrayList<>())
-                        .build();
-
-                for (; !rs.isAfterLast(); rs.next()) {
-                    if (movie.getMid() != rs.getLong("mid")) break;
-                    movie.getSchedules().add(Schedule.builder()
-                            .sid(rs.getLong("sid"))
-                            .mid(rs.getLong("mid"))
-                            .showAt(LocalDateTime.parse(rs.getString("show_at"), dateTimeFormatter))
-                            .tname(rs.getString("tname"))
                             .build());
                 }
                 movies.add(movie);

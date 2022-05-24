@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -58,15 +59,11 @@ public class MovieSearchController {
             Movie movie = movieService.findByMid(id).orElseThrow(() -> {
                 throw new IllegalStateException("해당하는 영화 ID가 없습니다.");
             });
-            model.addAttribute("title", movie.getTitle());
-            model.addAttribute("open_day", movie.getOpenDay());
-            model.addAttribute("director", movie.getDirector());
-            model.addAttribute("rating", movie.getRating());
-            model.addAttribute("length", movie.getLength());
-            model.addAttribute("actors", movie.getActors().stream().map(Actor::getName).collect(Collectors.toList()));
-
             List<Schedule> schedules = scheduleService.findByMid(id);
+
+            model.addAttribute("movie", movie);
             model.addAttribute("schedules", schedules);
+            model.addAttribute("now", LocalDate.now());
 
             return "search/movie_info";
         } catch (IllegalStateException e) {

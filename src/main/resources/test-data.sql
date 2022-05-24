@@ -9,9 +9,9 @@ INSERT INTO Authority (username, authority_name) VALUES ('test2', 'USER');
 INSERT INTO Authority (username, authority_name) VALUES ('test3', 'USER');
 
 
-INSERT INTO Movie (mid, title, open_day, director, rating, length) VALUES (1, '영화테스트1', '2022-05-09', '감독1', 'ALL', 126);
-INSERT INTO Movie (mid, title, open_day, director, rating, length) VALUES (2, '영화테스트2', '2022-05-10', '감독2', '_12', 126);
-INSERT INTO Movie (mid, title, open_day, director, rating, length) VALUES (3, '영화테스트3', '2022-05-14', '감독3', '_15', 106);
+INSERT INTO Movie (mid, title, open_day, director, rating, length) VALUES (1, '영화테스트1', '2022-05-08', '감독1', 'ALL', 126);
+INSERT INTO Movie (mid, title, open_day, director, rating, length) VALUES (2, '영화테스트2', '2022-05-09', '감독2', '_12', 126);
+INSERT INTO Movie (mid, title, open_day, director, rating, length) VALUES (3, '영화테스트3', '2022-05-24', '감독3', '_15', 106);
 INSERT INTO Movie (mid, title, open_day, director, rating, length) VALUES (4, '영화테스트4', '2022-05-11', '감독4', '_18', 127);
 
 INSERT INTO Actor (mid, name) VALUES (1, '배우1_1');

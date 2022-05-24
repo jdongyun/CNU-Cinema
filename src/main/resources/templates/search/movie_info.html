@@ -5,12 +5,22 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 </head>
 <body>
-<h1 th:text="${title}"></h1>
-<p>영화 개봉일 : <span th:text="${open_day}"></span></p>
-<p>감독 : <span th:text="${director}"></span></p>
-<p>등급 : <span th:text="${rating}"></span></p>
-<p>러닝타임 : <span th:text="${length} + '분'"></span></p>
-<p>배우 : <span th:text="${actors}"></span></p>
+<h1 th:text="${movie.title}"></h1>
+<p>영화 개봉일 : <span th:text="${movie.openDay}"></span></p>
+<p>감독 : <span th:text="${movie.director}"></span></p>
+<p>등급 : <span th:text="${movie.rating.toString()}"></span></p>
+<p>러닝타임 : <span th:text="${movie.length} + '분'"></span></p>
+<p th:text="'배우 : ' + ${#strings.listJoin(movie.actors.![name], ', ')}"></p>
+<th:block th:switch="${movie.openDay.compareTo(now) < 0}">
+    <div th:case="true">
+        <p th:text="'예매자 수: ' + ${movie.getTotalReservedSeats()}"></p>
+        <p th:text="'누적 관객 수: ' + ${movie.getTotalWatchedSeats()}"></p>
+    </div>
+    <div th:case="false">
+        <p th:text="'예매자 수: ' + ${movie.getTotalReservedSeats()}"></p>
+    </div>
+</th:block>
+
 <table>
     <thead>
     <tr>
