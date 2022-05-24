@@ -46,15 +46,15 @@ public class ScheduleServiceImpl implements ScheduleService {
 
     @Override
     public Long create(ScheduleCreateRequest request, Movie movie) {
-        LocalDateTime showAtStart = LocalDateTime.parse(request.getShowAt(), dateTimeFormatter).minusMinutes(30);
-        LocalDateTime showAtEnd = LocalDateTime.parse(request.getShowAt(), dateTimeFormatter).plusMinutes(movie.getLength() + 30);
+        LocalDateTime showAtStart = request.getShowAt().minusMinutes(30);
+        LocalDateTime showAtEnd = request.getShowAt().plusMinutes(movie.getLength() + 30);
 
         validateScreenTime(request.getTname(), showAtStart, showAtEnd);
 
         ScheduleDto schedule = ScheduleDto.builder()
                 .mid(movie.getMid())
                 .tname(request.getTname())
-                .showAt(LocalDateTime.parse(request.getShowAt(), dateTimeFormatter))
+                .showAt(request.getShowAt())
                 .build();
 
         return scheduleRepository.save(ScheduleDto.toEntity(schedule));

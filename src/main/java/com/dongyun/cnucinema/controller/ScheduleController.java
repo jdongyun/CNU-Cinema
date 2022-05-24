@@ -30,11 +30,11 @@ public class ScheduleController {
 
     @PostMapping("")
     public String create(Model model, @Validated ScheduleCreateRequest request) {
-        Movie movie = movieService.findByMid(request.getMid()).orElseThrow(() -> {
-            throw new IllegalStateException("movie ID가 없습니다.");
-        });
-
         try {
+            Movie movie = movieService.findByMid(request.getMid()).orElseThrow(() -> {
+                throw new IllegalStateException("movie ID가 없습니다.");
+            });
+
             scheduleService.create(request, movie);
         } catch (IllegalStateException e) {
             model.addAttribute("message", e.getMessage());

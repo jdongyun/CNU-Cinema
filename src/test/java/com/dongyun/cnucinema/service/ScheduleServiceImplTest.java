@@ -28,7 +28,7 @@ class ScheduleServiceImplTest implements BaseIntegrityTest {
         ScheduleCreateRequest request = ScheduleCreateRequest.builder()
                 .mid(1L)
                 .tname("경기")
-                .showAt("2022-01-01 00:00:00")
+                .showAt(LocalDateTime.of(2022, 1, 1, 0, 0, 0))
                 .build();
         Movie movie = movieService.findByMid(1L).get();
 
@@ -48,7 +48,7 @@ class ScheduleServiceImplTest implements BaseIntegrityTest {
         ScheduleCreateRequest request = ScheduleCreateRequest.builder()
                 .mid(1L)
                 .tname("경기")
-                .showAt("2022-05-09 09:30:00")
+                .showAt(LocalDateTime.of(2022, 5, 9, 9, 30, 0))
                 .build();
         Movie movie = movieService.findByMid(1L).get();
 
