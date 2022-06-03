@@ -3,6 +3,7 @@ package com.dongyun.cnucinema.repository;
 import com.dongyun.cnucinema.spec.entity.Ticketing;
 import com.dongyun.cnucinema.spec.enums.TicketingStatus;
 import com.dongyun.cnucinema.spec.repository.TicketingRepository;
+import com.dongyun.cnucinema.spec.vo.TicketingStatsVo;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -10,6 +11,7 @@ import org.springframework.jdbc.core.simple.SimpleJdbcInsert;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
@@ -170,6 +172,22 @@ public class DbTicketingRepository implements TicketingRepository {
                 ticketingRowMapper());
     }
 
+    @Override
+    public List<TicketingStatsVo> findTicketingStatsByRcAtBetween(LocalDate startDate, LocalDate endDate) {
+        String sql = """
+                select C.name, rc_at, status, seats
+                from Ticketing
+                    join Customer C on Ticketing.username = C.username
+                where DATE(rc_at) between :start_date AND :end_date
+                order by rc_at
+                """;
+
+        return jdbcTemplate.query(sql,
+                new MapSqlParameterSource("start_date", startDate)
+                        .addValue("end_date", endDate),
+                ticketingStatsRowMapper());
+    }
+
     private Long insert(Ticketing ticketing) {
         SimpleJdbcInsert insert = new SimpleJdbcInsert(dataSource)
                 .withTableName("Ticketing")
@@ -180,7 +198,7 @@ public class DbTicketingRepository implements TicketingRepository {
         params.put("username", ticketing.getUsername());
         params.put("rc_at", ticketing.getRcAt());
         params.put("seats", ticketing.getSeats());
-        params.put("status", ticketing.getStatus().toString());
+        params.put("status", ticketing.getStatus().name());
 
         return insert.executeAndReturnKey(params).longValue();
     }
@@ -195,7 +213,7 @@ public class DbTicketingRepository implements TicketingRepository {
         params.put("username", ticketing.getUsername());
         params.put("rc_at", ticketing.getRcAt());
         params.put("seats", ticketing.getSeats());
-        params.put("status", ticketing.getStatus().toString());
+        params.put("status", ticketing.getStatus().name());
 
         jdbcTemplate.update(sql, params);
 
@@ -213,6 +231,16 @@ public class DbTicketingRepository implements TicketingRepository {
                         .status(TicketingStatus.valueOf(rs.getString("status")))
                         .movieTitle(rs.getString("title"))
                         .scheduleShowAt(LocalDateTime.parse(rs.getString("show_at"), dateTimeFormatter))
+                        .build();
+    }
+
+    private RowMapper<TicketingStatsVo> ticketingStatsRowMapper() {
+        return (rs, rowNum) ->
+                TicketingStatsVo.builder()
+                        .customerName(rs.getString("name"))
+                        .rcAt(LocalDateTime.parse(rs.getString("rc_at"), dateTimeFormatter))
+                        .status(TicketingStatus.valueOf(rs.getString("status")))
+                        .seats(rs.getInt("seats"))
                         .build();
     }
 }

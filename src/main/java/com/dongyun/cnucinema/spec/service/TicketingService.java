@@ -4,7 +4,9 @@ import com.dongyun.cnucinema.dto.TicketingCancellationRequest;
 import com.dongyun.cnucinema.dto.TicketingCompletionRequest;
 import com.dongyun.cnucinema.spec.entity.Ticketing;
 import com.dongyun.cnucinema.spec.enums.TicketingStatus;
+import com.dongyun.cnucinema.spec.vo.TicketingStatsVo;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -31,4 +33,6 @@ public interface TicketingService {
     List<Ticketing> findByUsernameAndCancelledAndRcAtBetween(String username, LocalDateTime startAt, LocalDateTime endAt);
 
     List<Ticketing> findByUsernameAndWatchedAndRcAtBetween(String username, LocalDateTime startAt, LocalDateTime endAt);
+
+    List<TicketingStatsVo> findTicketingStatsByRcAtBetween(LocalDate startDate, LocalDate endDate);
 }

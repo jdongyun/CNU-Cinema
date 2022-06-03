@@ -1,6 +1,7 @@
 package com.dongyun.cnucinema.spec.repository;
 
 import com.dongyun.cnucinema.spec.entity.Schedule;
+import com.dongyun.cnucinema.spec.vo.ScheduleStatsVo;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,6 +19,8 @@ public interface ScheduleRepository {
     List<Schedule> findByTnameWithShowAtBetween(String tname, LocalDateTime showAtStart, LocalDateTime showAtEnd);
 
     List<Schedule> findAll();
+
+    List<ScheduleStatsVo> findStatsByRcAtBetween(LocalDate startDate, LocalDate endDate);
 
     Long save(Schedule schedule);
 }

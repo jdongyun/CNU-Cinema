@@ -5,6 +5,7 @@ import com.dongyun.cnucinema.spec.entity.Actor;
 import com.dongyun.cnucinema.spec.entity.Movie;
 import com.dongyun.cnucinema.spec.entity.Ticketing;
 import com.dongyun.cnucinema.spec.enums.TicketingStatus;
+import com.dongyun.cnucinema.spec.vo.MovieRankStatsVo;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -156,7 +157,7 @@ class DbMovieRepositoryTest implements BaseIntegrityTest {
             Movie movie = movieRepository.findByMid(2L).get();
 
             // then
-            Assertions.assertThat(movie.getTotalReservedSeats()).isEqualTo(3);
+            Assertions.assertThat(movie.getTotalReservedSeats()).isEqualTo(18);
             Assertions.assertThat(movie.getTotalWatchedSeats()).isEqualTo(15);
         }
     }
@@ -192,7 +193,7 @@ class DbMovieRepositoryTest implements BaseIntegrityTest {
             Assertions.assertThat(
                             movies.stream().filter(
                                     m -> m.getTitle().equals("영화테스트3")).findAny().get().getTotalReservedSeats())
-                    .isEqualTo(2);
+                    .isEqualTo(7);
             Assertions.assertThat(
                             movies.stream().filter(
                                     m -> m.getTitle().equals("영화테스트3")).findAny().get().getTotalWatchedSeats())
@@ -216,7 +217,7 @@ class DbMovieRepositoryTest implements BaseIntegrityTest {
             Assertions.assertThat(
                             movies.stream().filter(
                                     m -> m.getTitle().equals("영화테스트3")).findAny().get().getTotalReservedSeats())
-                    .isEqualTo(2);
+                    .isEqualTo(7);
             Assertions.assertThat(
                             movies.stream().filter(
                                     m -> m.getTitle().equals("영화테스트3")).findAny().get().getTotalWatchedSeats())
@@ -244,11 +245,26 @@ class DbMovieRepositoryTest implements BaseIntegrityTest {
             Assertions.assertThat(
                             movies.stream().filter(
                                     m -> m.getTitle().equals("영화테스트3")).findAny().get().getTotalReservedSeats())
-                    .isEqualTo(2);
+                    .isEqualTo(7);
             Assertions.assertThat(
                             movies.stream().filter(
                                     m -> m.getTitle().equals("영화테스트3")).findAny().get().getTotalWatchedSeats())
                     .isEqualTo(5);
         }
+    }
+
+    @Test
+    @DisplayName("특정 기간동안 예매한 영화의 순위를 정상적으로 가져와야 합니다.")
+    void findByRcAtBetweenWithRank() {
+        // given
+
+        // when
+        List<MovieRankStatsVo> stats = movieRepository.findByRcAtBetweenWithRank(
+                LocalDate.of(2022, 5, 9), LocalDate.of(2022, 5, 9));
+
+        // then
+        Assertions.assertThat(stats).hasSize(2);
+        Assertions.assertThat(stats.stream().findFirst().get().getMovieTitle()).isEqualTo("영화테스트2");
+        Assertions.assertThat(stats.stream().findFirst().get().getSeats()).isEqualTo(18);
     }
 }

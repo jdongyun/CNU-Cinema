@@ -1,6 +1,7 @@
 package com.dongyun.cnucinema.spec.service;
 
 import com.dongyun.cnucinema.spec.entity.Movie;
+import com.dongyun.cnucinema.spec.vo.MovieRankStatsVo;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,6 +15,8 @@ public interface MovieService {
     List<Movie> findByScheduleShowAtDate(LocalDate showAtDate);
 
     List<Movie> findByTitleContainsAndScheduleShowAtDate(String title, LocalDate showAtDate);
+
+    List<MovieRankStatsVo> findByRcAtBetweenWithRank(LocalDate startDate, LocalDate endDate);
 
     List<Movie> findAll();
 }

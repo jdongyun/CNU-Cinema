@@ -1,0 +1,79 @@
+<!DOCTYPE HTML>
+<html xmlns:th="http://www.thymeleaf.org" lang="ko">
+<head>
+    <title>CNU 영화관 - 관리자 페이지</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<a href="/">메인으로 돌아가기</a>
+<br />
+
+<form action="" method="get">
+    <label>
+        <input type="date" name="start_date" th:value="${startDate}" />
+    </label>
+    ~
+    <label>
+        <input type="date" name="end_date" th:value="${endDate}" />
+    </label>
+    <button type="submit">검색</button>
+</form>
+
+<h2>영화 순위</h2>
+<p th:if="${movieStats.isEmpty()}">내역이 없습니다!</p>
+<table th:if="${!movieStats.isEmpty()}" style="border-spacing: 1rem">
+    <tr>
+        <th>순위</th>
+        <th>영화 제목</th>
+        <th>예매 좌석 수</th>
+    </tr>
+    <tr th:each="item : ${movieStats}">
+        <td th:text="${item.getRank()}"></td>
+        <td th:text="${item.getMovieTitle()}"></td>
+        <td th:text="${item.getSeats()}"></td>
+    </tr>
+</table>
+<br />
+
+<h2>스케줄 통계</h2>
+<p th:if="${scheduleStats.isEmpty()}">내역이 없습니다!</p>
+<table th:if="${!scheduleStats.isEmpty()}" style="border-spacing: 1rem">
+    <tr>
+        <th>영화 제목</th>
+        <th>상영 시작 시각</th>
+        <th>예매자 이름</th>
+        <th>예매 좌석 수</th>
+    </tr>
+    <tr th:each="item : ${scheduleStats}">
+        <td th:if="${item.getMovieTitle() == null}" th:text="'모든 영화'"></td>
+        <td th:if="${item.getMovieTitle() != null}" th:text="${item.getMovieTitle()}"></td>
+        <td th:if="${item.getMovieTitle() == null}" th:text="'모든 스케줄'"></td>
+        <td th:if="${item.getMovieTitle() != null}" th:text="${#temporals.format(item.getScheduleShowAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
+
+        <td th:if="${item.getCustomerName() == null}" th:text="'모든 고객'"></td>
+        <td th:if="${item.getCustomerName() != null}" th:text="${item.getCustomerName()}"></td>
+        <td th:text="${item.getSeats()}"></td>
+    </tr>
+</table>
+<br />
+
+<h2>티켓팅 통계</h2>
+<p th:if="${ticketingStats.isEmpty()}">내역이 없습니다!</p>
+<table th:if="${!ticketingStats.isEmpty()}" style="border-spacing: 1rem">
+    <tr>
+        <th>예매자 이름</th>
+        <th>예매 시각</th>
+        <th>예매 상태</th>
+        <th>예매 좌석 수</th>
+    </tr>
+    <tr th:each="item : ${ticketingStats}">
+        <td th:text="${item.getCustomerName()}"></td>
+        <td th:text="${#temporals.format(item.getRcAt(), 'yyyy-MM-dd HH:mm:ss')}"></td>
+        <td th:text="${item.getStatus()}"></td>
+        <td th:text="${item.getSeats()}"></td>
+    </tr>
+</table>
+<br />
+
+</body>
+</html>

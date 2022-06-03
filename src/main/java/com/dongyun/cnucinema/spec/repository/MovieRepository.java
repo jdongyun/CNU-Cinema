@@ -1,6 +1,7 @@
 package com.dongyun.cnucinema.spec.repository;
 
 import com.dongyun.cnucinema.spec.entity.Movie;
+import com.dongyun.cnucinema.spec.vo.MovieRankStatsVo;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -17,4 +18,6 @@ public interface MovieRepository {
     List<Movie> findByTitleContainsAndScheduleShowAtDate(String title, LocalDate showAtDate);
 
     List<Movie> findAll();
+
+    List<MovieRankStatsVo> findByRcAtBetweenWithRank(LocalDate startDate, LocalDate endDate);
 }

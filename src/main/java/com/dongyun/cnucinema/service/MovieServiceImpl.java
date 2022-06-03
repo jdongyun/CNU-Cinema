@@ -3,6 +3,7 @@ package com.dongyun.cnucinema.service;
 import com.dongyun.cnucinema.spec.entity.Movie;
 import com.dongyun.cnucinema.spec.repository.MovieRepository;
 import com.dongyun.cnucinema.spec.service.MovieService;
+import com.dongyun.cnucinema.spec.vo.MovieRankStatsVo;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -35,6 +36,11 @@ public class MovieServiceImpl implements MovieService {
     @Override
     public List<Movie> findByTitleContainsAndScheduleShowAtDate(String title, LocalDate showAtDate) {
         return movieRepository.findByTitleContainsAndScheduleShowAtDate(title, showAtDate);
+    }
+
+    @Override
+    public List<MovieRankStatsVo> findByRcAtBetweenWithRank(LocalDate startDate, LocalDate endDate) {
+        return movieRepository.findByRcAtBetweenWithRank(startDate, endDate);
     }
 
     @Override

@@ -6,8 +6,10 @@ import com.dongyun.cnucinema.spec.entity.Movie;
 import com.dongyun.cnucinema.spec.entity.Schedule;
 import com.dongyun.cnucinema.spec.repository.ScheduleRepository;
 import com.dongyun.cnucinema.spec.service.ScheduleService;
+import com.dongyun.cnucinema.spec.vo.ScheduleStatsVo;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -58,6 +60,11 @@ public class ScheduleServiceImpl implements ScheduleService {
                 .build();
 
         return scheduleRepository.save(ScheduleDto.toEntity(schedule));
+    }
+
+    @Override
+    public List<ScheduleStatsVo> findStatsByRcAtBetween(LocalDate startDate, LocalDate endDate) {
+        return scheduleRepository.findStatsByRcAtBetween(startDate, endDate);
     }
 
     @Override

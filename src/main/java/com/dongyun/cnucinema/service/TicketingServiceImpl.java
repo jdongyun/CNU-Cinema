@@ -13,9 +13,11 @@ import com.dongyun.cnucinema.spec.repository.MovieRepository;
 import com.dongyun.cnucinema.spec.repository.ScheduleRepository;
 import com.dongyun.cnucinema.spec.repository.TicketingRepository;
 import com.dongyun.cnucinema.spec.service.TicketingService;
+import com.dongyun.cnucinema.spec.vo.TicketingStatsVo;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -132,6 +134,11 @@ public class TicketingServiceImpl implements TicketingService {
     @Override
     public List<Ticketing> findByUsernameAndWatchedAndRcAtBetween(String username, LocalDateTime startAt, LocalDateTime endAt) {
         return ticketingRepository.findByUsernameAndWatchedAndRcAtBetweenOrderByShowAtDesc(username, startAt, endAt);
+    }
+
+    @Override
+    public List<TicketingStatsVo> findTicketingStatsByRcAtBetween(LocalDate startDate, LocalDate endDate) {
+        return ticketingRepository.findTicketingStatsByRcAtBetween(startDate, endDate);
     }
 
     private void validateSchedule(Schedule schedule) {

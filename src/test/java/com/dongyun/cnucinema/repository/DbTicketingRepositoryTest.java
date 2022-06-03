@@ -4,6 +4,7 @@ import com.dongyun.cnucinema.BaseIntegrityTest;
 import com.dongyun.cnucinema.dto.TicketingDto;
 import com.dongyun.cnucinema.spec.entity.Ticketing;
 import com.dongyun.cnucinema.spec.enums.TicketingStatus;
+import com.dongyun.cnucinema.spec.vo.TicketingStatsVo;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -12,6 +13,7 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -223,5 +225,18 @@ class DbTicketingRepositoryTest implements BaseIntegrityTest {
             Assertions.assertThat(ticketings).hasSize(3);
             Assertions.assertThat(ticketings.stream().findFirst().get().getSeats()).isEqualTo(5);
         }
+    }
+
+    @Test
+    @DisplayName("특정 기간동안 티켓팅 결과의 통계를 정상적으로 불러와야 합니다.")
+    void findTicketingStatsByRcAtBetween() {
+        // given
+
+        // when
+        List<TicketingStatsVo> stats = ticketingRepository.findTicketingStatsByRcAtBetween(
+                LocalDate.of(2022, 5, 9), LocalDate.of(2022, 5, 9));
+
+        // then
+        Assertions.assertThat(stats).hasSize(9);
     }
 }

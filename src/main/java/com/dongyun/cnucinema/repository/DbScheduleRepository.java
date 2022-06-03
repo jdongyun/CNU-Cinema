@@ -2,6 +2,7 @@ package com.dongyun.cnucinema.repository;
 
 import com.dongyun.cnucinema.spec.entity.Schedule;
 import com.dongyun.cnucinema.spec.repository.ScheduleRepository;
+import com.dongyun.cnucinema.spec.vo.ScheduleStatsVo;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
@@ -10,6 +11,7 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -95,6 +97,31 @@ public class DbScheduleRepository implements ScheduleRepository {
     }
 
     @Override
+    public List<ScheduleStatsVo> findStatsByRcAtBetween(LocalDate startDate, LocalDate endDate) {
+        String sql = """
+                select
+                    T.sid,
+                    Schedule.show_at,
+                    M.title,
+                    T.username,
+                    C.name,
+                    sum(seats) total_seats
+                from Schedule
+                         join Ticketing T on Schedule.sid = T.sid
+                         join Movie M on Schedule.mid = M.mid
+                         join Customer C on T.username = C.username
+                where
+                        status <> 'C' and DATE(rc_at) between :start_date and :end_date
+                group by T.sid, T.username with rollup
+                """;
+
+        return jdbcTemplate.query(sql,
+                new MapSqlParameterSource("start_date", startDate)
+                    .addValue("end_date", endDate),
+                scheduleStatsVoRowMapper());
+    }
+
+    @Override
     public Long save(Schedule schedule) {
         if (schedule.getSid() == null) {
             return insert(schedule);
@@ -136,6 +163,22 @@ public class DbScheduleRepository implements ScheduleRepository {
                     .tname(rs.getString("tname"))
                     .showAt(LocalDateTime.parse(rs.getString("show_at"), dateTimeFormatter))
                     .remainSeats(rs.getInt("remain_seats"))
+                    .build();
+    }
+
+    private RowMapper<ScheduleStatsVo> scheduleStatsVoRowMapper() {
+        return (rs, rowNum) ->
+                ScheduleStatsVo.builder()
+                    .scheduleShowAt(
+                            rs.getObject("sid", Integer.class) == null ?
+                                    null : LocalDateTime.parse(rs.getString("show_at"), dateTimeFormatter))
+                    .movieTitle(
+                            rs.getObject("sid", Integer.class) == null ?
+                                    null : rs.getString("title"))
+                    .customerName(
+                            rs.getString("username") == null ?
+                                    null : rs.getString("name"))
+                    .seats(rs.getInt("total_seats"))
                     .build();
     }
 }

@@ -5,6 +5,7 @@ import com.dongyun.cnucinema.spec.entity.Movie;
 import com.dongyun.cnucinema.spec.entity.Schedule;
 import com.dongyun.cnucinema.spec.enums.MovieRating;
 import com.dongyun.cnucinema.spec.repository.MovieRepository;
+import com.dongyun.cnucinema.spec.vo.MovieRankStatsVo;
 import org.springframework.jdbc.core.ResultSetExtractor;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.jdbc.core.namedparam.MapSqlParameterSource;
@@ -43,7 +44,7 @@ public class DbMovieRepository implements MovieRepository {
                     left join (
                         select
                             S.mid,
-                            SUM(CASE WHEN S.show_at > :now and T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
+                            SUM(CASE WHEN T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
                             SUM(CASE WHEN S.show_at <= :now and T.status = 'R' THEN T.seats ELSE 0 END) total_watched
                         from Schedule S
                                  left join Ticketing T on T.sid = S.sid
@@ -72,7 +73,7 @@ public class DbMovieRepository implements MovieRepository {
                     left join (
                         select
                             S.mid,
-                            SUM(CASE WHEN S.show_at > :now and T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
+                            SUM(CASE WHEN T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
                             SUM(CASE WHEN S.show_at <= :now and T.status = 'R' THEN T.seats ELSE 0 END) total_watched
                         from Schedule S
                             left join Ticketing T on T.sid = S.sid
@@ -99,7 +100,7 @@ public class DbMovieRepository implements MovieRepository {
                     left join (
                         select
                             S.mid,
-                            SUM(CASE WHEN S.show_at > :now and T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
+                            SUM(CASE WHEN T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
                             SUM(CASE WHEN S.show_at <= :now and T.status = 'R' THEN T.seats ELSE 0 END) total_watched
                         from Schedule S
                             left join Ticketing T on T.sid = S.sid
@@ -126,7 +127,7 @@ public class DbMovieRepository implements MovieRepository {
                     left join (
                         select
                             S.mid,
-                            SUM(CASE WHEN S.show_at > :now and T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
+                            SUM(CASE WHEN T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
                             SUM(CASE WHEN S.show_at <= :now and T.status = 'R' THEN T.seats ELSE 0 END) total_watched
                         from Schedule S
                             left join Ticketing T on T.sid = S.sid
@@ -159,7 +160,7 @@ public class DbMovieRepository implements MovieRepository {
                     left join (
                         select
                             S.mid,
-                            SUM(CASE WHEN S.show_at > :now and T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
+                            SUM(CASE WHEN T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
                             SUM(CASE WHEN S.show_at <= :now and T.status = 'R' THEN T.seats ELSE 0 END) total_watched
                         from Schedule S
                             left join Ticketing T on T.sid = S.sid
@@ -169,6 +170,27 @@ public class DbMovieRepository implements MovieRepository {
         return jdbcTemplate.query(sql,
                 new MapSqlParameterSource("now", now),
                 movieRowWithActorsExtractor());
+    }
+
+    @Override
+    public List<MovieRankStatsVo> findByRcAtBetweenWithRank(LocalDate startDate, LocalDate endDate) {
+        String sql = """
+                select
+                    rank() over (order by sum(seats) desc) movie_rank,
+                    Movie.title,
+                    sum(seats) total_seats
+                from Movie
+                    join Schedule S on Movie.mid = S.mid
+                    join Ticketing T on S.sid = T.sid
+                where T.status <> 'C' and DATE(rc_at) between :start_date and :end_date
+                group by Movie.mid
+                order by movie_rank
+                """;
+
+        return jdbcTemplate.query(sql,
+                new MapSqlParameterSource("start_date", startDate)
+                        .addValue("end_date", endDate),
+                movieRankStatsVoRowMapper());
     }
 
     private RowMapper<Movie> movieRowWithActorsMapper() {
@@ -225,5 +247,14 @@ public class DbMovieRepository implements MovieRepository {
 
             return movies;
         };
+    }
+
+    private RowMapper<MovieRankStatsVo> movieRankStatsVoRowMapper() {
+        return (rs, rowNum) ->
+            MovieRankStatsVo.builder()
+                .rank(rs.getInt("movie_rank"))
+                .movieTitle(rs.getString("title"))
+                .seats(rs.getInt("total_seats"))
+                .build();
     }
 }
