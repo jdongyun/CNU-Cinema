@@ -44,6 +44,7 @@ public class DbTicketingRepository implements TicketingRepository {
 
     @Override
     public Optional<Ticketing> findById(Long id) {
+        // 티켓팅 ID로 해당하는 티켓팅을 찾는 질의.
         String sql = "select * from Ticketing T " +
                 "JOIN Schedule S on T.sid = S.sid and T.id = :id " +
                 "JOIN Movie M on S.mid = M.mid ";
@@ -57,6 +58,7 @@ public class DbTicketingRepository implements TicketingRepository {
 
     @Override
     public List<Ticketing> findBySid(Long sid) {
+        // 스케줄 ID로 해당하는 티켓팅의 목록을 찾는 질의.
         String sql = "select * from Ticketing T " +
                 "JOIN Schedule S on T.sid = S.sid and T.sid = :sid " +
                 "JOIN Movie M on S.mid = M.mid ";
@@ -68,6 +70,7 @@ public class DbTicketingRepository implements TicketingRepository {
 
     @Override
     public List<Ticketing> findByUsername(String username) {
+        // 사용자 ID로 해당하는 티켓팅의 목록을 찾는 질의.
         String sql = "select * from Ticketing T " +
                 "JOIN Schedule S on T.sid = S.sid and T.username = :username " +
                 "JOIN Movie M on S.mid = M.mid ";
@@ -79,6 +82,7 @@ public class DbTicketingRepository implements TicketingRepository {
 
     @Override
     public List<Ticketing> findByUsernameAndReservedOrderByRcAtDesc(String username) {
+        // 특정 사용자 ID의 예매 완료된 티켓팅의 목록을 찾는 질의.
         LocalDateTime now = LocalDateTime.now();
 
         String sql = "select * from Ticketing T " +
@@ -94,6 +98,7 @@ public class DbTicketingRepository implements TicketingRepository {
 
     @Override
     public List<Ticketing> findByUsernameAndCancelledOrderByRcAtDesc(String username) {
+        // 특정 사용자 ID의 취소 완료된 티켓팅의 목록을 찾는 질의.
         String sql = "select * from Ticketing T " +
                 "JOIN Schedule S on T.sid = S.sid and T.username = :username and T.status = 'C' " +
                 "JOIN Movie M on S.mid = M.mid " +
@@ -106,6 +111,7 @@ public class DbTicketingRepository implements TicketingRepository {
 
     @Override
     public List<Ticketing> findByUsernameAndWatchedOrderByShowAtDesc(String username) {
+        // 특정 사용자 ID의 관람 완료된 티켓팅의 목록을 찾는 질의.
         LocalDateTime now = LocalDateTime.now();
 
         String sql = "select * from Ticketing T " +
@@ -121,6 +127,7 @@ public class DbTicketingRepository implements TicketingRepository {
 
     @Override
     public List<Ticketing> findByUsernameAndReservedAndRcAtBetweenOrderByRcAtDesc(String username, LocalDateTime startAt, LocalDateTime endAt) {
+        // 특정 사용자 ID의 특정 기간 동안 예매 완료된 티켓팅의 목록을 찾는 질의.
         LocalDateTime now = LocalDateTime.now();
 
         String sql = "select * from Ticketing T " +
@@ -139,6 +146,7 @@ public class DbTicketingRepository implements TicketingRepository {
 
     @Override
     public List<Ticketing> findByUsernameAndCancelledAndRcAtBetweenOrderByRcAtDesc(String username, LocalDateTime startAt, LocalDateTime endAt) {
+        // 특정 사용자 ID의 특정 기간 동안 예매 취소된 티켓팅의 목록을 찾는 질의.
         LocalDateTime now = LocalDateTime.now();
 
         String sql = "select * from Ticketing T " +
@@ -156,6 +164,7 @@ public class DbTicketingRepository implements TicketingRepository {
 
     @Override
     public List<Ticketing> findByUsernameAndWatchedAndRcAtBetweenOrderByShowAtDesc(String username, LocalDateTime startAt, LocalDateTime endAt) {
+        // 특정 사용자 ID의 특정 기간 동안 관람 완료된 티켓팅의 목록을 찾는 질의.
         LocalDateTime now = LocalDateTime.now();
 
         String sql = "select * from Ticketing T " +
@@ -174,6 +183,7 @@ public class DbTicketingRepository implements TicketingRepository {
 
     @Override
     public List<TicketingStatsVo> findTicketingStatsByRcAtBetween(LocalDate startDate, LocalDate endDate) {
+        // 특정 기간 동안의 통계 데이터를 찾는 질의.
         String sql = """
                 select C.name, rc_at, status, seats
                 from Ticketing

@@ -38,6 +38,7 @@ public class MovieSearchController {
     ) {
         List<Movie> movies = new ArrayList<>();
         if (title == null && ticketingDate == null) {
+            // 영화 제목과 관람 일자를 모두 받지 않으면 전체 영화 정보를 보여준다.
             movies = movieService.findAll();
         } else if (title != null && ticketingDate != null) {
             movies = movieService.findByTitleContainsAndScheduleShowAtDate(title, ticketingDate);
@@ -59,6 +60,7 @@ public class MovieSearchController {
             Movie movie = movieService.findByMid(id).orElseThrow(() -> {
                 throw new IllegalStateException("해당하는 영화 ID가 없습니다.");
             });
+            // 영화 ID에 해당하는 스케줄을 모두 불러온다.
             List<Schedule> schedules = scheduleService.findByMid(id);
 
             model.addAttribute("movie", movie);

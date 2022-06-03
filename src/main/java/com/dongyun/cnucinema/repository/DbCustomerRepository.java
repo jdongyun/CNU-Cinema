@@ -25,6 +25,7 @@ public class DbCustomerRepository implements CustomerRepository {
 
     @Override
     public Optional<Customer> findByUsername(String username) {
+        // 사용자 ID로 해당하는 사용자를 찾는 질의.
         String sql = "select * from Customer " +
                 "left outer join Authority A on Customer.username = A.username " +
                 "where Customer.username = :username";
@@ -37,6 +38,7 @@ public class DbCustomerRepository implements CustomerRepository {
 
     @Override
     public List<Customer> findAll() {
+        // 모든 사용자를 찾는 질의.
         String sql = "select * from Customer " +
                 "left outer join Authority A on Customer.username = A.username";
         return jdbcTemplate.query(sql, customerRowExtractor());

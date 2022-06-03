@@ -33,6 +33,7 @@ public class DbScheduleRepository implements ScheduleRepository {
 
     @Override
     public Optional<Schedule> findBySid(Long id) {
+        // 스케줄 ID로 해당하는 스케줄을 찾는 질의.
         String sql = "select Schedule.*, T2.seats , (T2.seats - IFNULL(sum(T.seats), 0)) remain_seats " +
                 "from Schedule " +
                 "left outer join Ticketing T on Schedule.sid = T.sid and (T.status IS NULL or T.status <> 'C') " +
@@ -46,6 +47,7 @@ public class DbScheduleRepository implements ScheduleRepository {
 
     @Override
     public List<Schedule> findByMid(Long id) {
+        // 영화 ID로 해당하는 스케줄의 목록을 찾는 질의.
         String sql = "select Schedule.*, T2.seats , (T2.seats - IFNULL(sum(T.seats), 0)) remain_seats " +
                 "from Schedule " +
                 "left outer join Ticketing T on Schedule.sid = T.sid and (T.status IS NULL or T.status <> 'C') " +
@@ -59,6 +61,7 @@ public class DbScheduleRepository implements ScheduleRepository {
 
     @Override
     public List<Schedule> findByTname(String tname) {
+        // 영화관 이름으로 해당하는 스케줄의 목록을 찾는 질의.
         String sql = "select Schedule.*, T2.seats , (T2.seats - IFNULL(sum(T.seats), 0)) remain_seats " +
                 "from Schedule " +
                 "left outer join Ticketing T on Schedule.sid = T.sid and (T.status IS NULL or T.status <> 'C') " +
@@ -72,6 +75,7 @@ public class DbScheduleRepository implements ScheduleRepository {
 
     @Override
     public List<Schedule> findByTnameWithShowAtBetween(String tname, LocalDateTime showAtStart, LocalDateTime showAtEnd) {
+        // 영화관 이름과 상영 시각의 범위로 스케줄의 목록을 찾는 질의.
         String sql = "select Schedule.*, T2.seats , (T2.seats - IFNULL(sum(T.seats), 0)) remain_seats " +
                 "from Schedule " +
                 "left outer join Ticketing T on Schedule.sid = T.sid and (T.status IS NULL or T.status <> 'C') " +
@@ -88,6 +92,7 @@ public class DbScheduleRepository implements ScheduleRepository {
 
     @Override
     public List<Schedule> findAll() {
+        // 모든 스케줄을 찾는 질의.
         String sql = "select Schedule.*, T2.seats , (T2.seats - IFNULL(sum(T.seats), 0)) remain_seats " +
                 "from Schedule " +
                 "left outer join Ticketing T on Schedule.sid = T.sid and (T.status IS NULL or T.status <> 'C' ) " +
@@ -98,6 +103,7 @@ public class DbScheduleRepository implements ScheduleRepository {
 
     @Override
     public List<ScheduleStatsVo> findStatsByRcAtBetween(LocalDate startDate, LocalDate endDate) {
+        // 예매 시각의 범위로 통계 데이터를 찾는 질의.
         String sql = """
                 select
                     T.sid,

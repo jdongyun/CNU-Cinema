@@ -33,6 +33,7 @@ public class DbMovieRepository implements MovieRepository {
 
     @Override
     public Optional<Movie> findByMid(Long id) {
+        // 영화 ID로 해당하는 영화를 찾는 질의.
         LocalDateTime now = LocalDateTime.now();
 
         String sql = """
@@ -62,6 +63,7 @@ public class DbMovieRepository implements MovieRepository {
 
     @Override
     public List<Movie> findByTitleContains(String title) {
+        // 영화 제목의 일부로 영화 목록을 가져오는 질의.
         LocalDateTime now = LocalDateTime.now();
 
         String sql = """
@@ -89,6 +91,7 @@ public class DbMovieRepository implements MovieRepository {
 
     @Override
     public List<Movie> findByScheduleShowAtDate(LocalDate showAtDate) {
+        // 관람 예정일로 해당하는 영화 목록을 가져오는 질의.
         LocalDateTime now = LocalDateTime.now();
 
         String sql = """
@@ -116,6 +119,7 @@ public class DbMovieRepository implements MovieRepository {
 
     @Override
     public List<Movie> findByTitleContainsAndScheduleShowAtDate(String title, LocalDate showAtDate) {
+        // 영화 제목의 일부와 관람 예정일로 해당하는 영화 목록을 가져오는 질의.
         LocalDateTime now = LocalDateTime.now();
 
         String sql = """
@@ -149,6 +153,7 @@ public class DbMovieRepository implements MovieRepository {
 
     @Override
     public List<Movie> findAll() {
+        // 모든 영화를 가져오는 질의.
         LocalDateTime now = LocalDateTime.now();
 
         String sql = """
@@ -174,6 +179,7 @@ public class DbMovieRepository implements MovieRepository {
 
     @Override
     public List<MovieRankStatsVo> findByRcAtBetweenWithRank(LocalDate startDate, LocalDate endDate) {
+        // 특정 기간 동안의 영화 예매 기록의 순위를 가져오는 질의.
         String sql = """
                 select
                     rank() over (order by sum(seats) desc) movie_rank,

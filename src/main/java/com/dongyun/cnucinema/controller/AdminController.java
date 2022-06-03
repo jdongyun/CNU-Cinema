@@ -35,6 +35,7 @@ public class AdminController {
                        @RequestParam(required = false, name = "start_date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
                        @RequestParam(required = false, name = "end_date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
         if (startDate == null || endDate == null || startDate.isAfter(endDate)) {
+            // 날짜가 입력되어 있지 않거나 시작-종료일자가 반대로 되어 있으면 초기화한다.
             re.addAttribute("start_date", LocalDate.now().minusDays(30).toString());
             re.addAttribute("end_date", LocalDate.now().toString());
             return "redirect:/admin";

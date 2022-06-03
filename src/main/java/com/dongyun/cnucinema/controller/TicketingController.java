@@ -50,6 +50,7 @@ public class TicketingController {
         }
 
         try {
+            // 스케줄과 영화 정보를 각각 불러온다.
             Schedule schedule = scheduleService.findBySid(request.getSid())
                     .orElseThrow(() -> {
                         throw new IllegalStateException("해당하는 스케줄이 없습니다.");
@@ -81,6 +82,7 @@ public class TicketingController {
         }
 
         try {
+            // Request에 포함된 Schedule ID와 예매할 좌석 수를 받아와 예매 처리한다.
             Long id = ticketingService.reserve(request, auth.getName());
 
             Ticketing ticketing = ticketingService.findById(id).orElseThrow(() -> {
@@ -97,6 +99,7 @@ public class TicketingController {
             model.addAttribute("reserved_seats", ticketing.getSeats());
 
             new Thread(() -> {
+                // 새로운 쓰레드에서 메일을 전송한다.
                 mailService.sendTicketingMail(customer, schedule, ticketing);
             }).start();
         } catch (IllegalStateException e) {

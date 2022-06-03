@@ -33,6 +33,7 @@ public class CustomerController {
             @RequestParam(required = false, name = "start_date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
             @RequestParam(required = false, name = "end_date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
 
+        // Authentication 객체에서 현재 로그인한 사용자 정보를 가져온다.
         String username = auth.getName();
         model.addAttribute("username", username);
         model.addAttribute("authorities", Arrays.toString(auth.getAuthorities().toArray()));
@@ -43,6 +44,7 @@ public class CustomerController {
             return "redirect:/user";
         }
 
+        // 날짜를 시간으로 변환한다.
         LocalDateTime startAt = LocalDateTime.of(startDate, LocalTime.MIDNIGHT);
         LocalDateTime endAt = LocalDateTime.of(endDate.plusDays(1), LocalTime.MIDNIGHT).minusSeconds(1);
 
