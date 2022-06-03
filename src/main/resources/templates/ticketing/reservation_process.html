@@ -6,7 +6,7 @@
 </head>
 <body>
     <p th:text="'예약할 영화: ' + ${movie_title}"></p>
-    <p th:text="'상영 시작 시각: ' + ${show_at}"></p>
+    <p th:text="'상영 시작 시각: ' + ${#temporals.format(show_at, 'yyyy-MM-dd HH:mm')}"></p>
     <p th:text="'상영관 이름: ' + ${tname}"></p>
     <p th:text="'잔여 좌석수: ' + ${remain_seats}"></p>
     <form action="/ticketing/completion" method="post">

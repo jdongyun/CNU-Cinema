@@ -39,7 +39,7 @@
                 <button type="submit">예매하기</button>
             </form>
         </td>
-        <td th:text="${schedule.showAt}"></td>
+        <td th:text="${#temporals.format(schedule.showAt, 'yyyy-MM-dd HH:mm')}"></td>
         <td th:text="${schedule.tname}"></td>
         <td th:text="${schedule.remainSeats}"></td>
     </tr>
