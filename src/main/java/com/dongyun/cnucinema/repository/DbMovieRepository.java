@@ -45,7 +45,7 @@ public class DbMovieRepository implements MovieRepository {
                     left join (
                         select
                             S.mid,
-                            SUM(CASE WHEN T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
+                            SUM(CASE WHEN S.show_at > :now and T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
                             SUM(CASE WHEN S.show_at <= :now and T.status = 'R' THEN T.seats ELSE 0 END) total_watched
                         from Schedule S
                                  left join Ticketing T on T.sid = S.sid
@@ -75,7 +75,7 @@ public class DbMovieRepository implements MovieRepository {
                     left join (
                         select
                             S.mid,
-                            SUM(CASE WHEN T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
+                            SUM(CASE WHEN S.show_at > :now and T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
                             SUM(CASE WHEN S.show_at <= :now and T.status = 'R' THEN T.seats ELSE 0 END) total_watched
                         from Schedule S
                             left join Ticketing T on T.sid = S.sid
@@ -103,7 +103,7 @@ public class DbMovieRepository implements MovieRepository {
                     left join (
                         select
                             S.mid,
-                            SUM(CASE WHEN T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
+                            SUM(CASE WHEN S.show_at > :now and T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
                             SUM(CASE WHEN S.show_at <= :now and T.status = 'R' THEN T.seats ELSE 0 END) total_watched
                         from Schedule S
                             left join Ticketing T on T.sid = S.sid
@@ -131,7 +131,7 @@ public class DbMovieRepository implements MovieRepository {
                     left join (
                         select
                             S.mid,
-                            SUM(CASE WHEN T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
+                            SUM(CASE WHEN S.show_at > :now and T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
                             SUM(CASE WHEN S.show_at <= :now and T.status = 'R' THEN T.seats ELSE 0 END) total_watched
                         from Schedule S
                             left join Ticketing T on T.sid = S.sid
@@ -165,7 +165,7 @@ public class DbMovieRepository implements MovieRepository {
                     left join (
                         select
                             S.mid,
-                            SUM(CASE WHEN T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
+                            SUM(CASE WHEN S.show_at > :now and T.status = 'R' THEN T.seats ELSE 0 END) total_reserved,
                             SUM(CASE WHEN S.show_at <= :now and T.status = 'R' THEN T.seats ELSE 0 END) total_watched
                         from Schedule S
                             left join Ticketing T on T.sid = S.sid

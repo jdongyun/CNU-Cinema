@@ -157,7 +157,7 @@ class DbMovieRepositoryTest implements BaseIntegrityTest {
             Movie movie = movieRepository.findByMid(2L).get();
 
             // then
-            Assertions.assertThat(movie.getTotalReservedSeats()).isEqualTo(18);
+            Assertions.assertThat(movie.getTotalReservedSeats()).isEqualTo(3);
             Assertions.assertThat(movie.getTotalWatchedSeats()).isEqualTo(15);
         }
     }
@@ -193,7 +193,7 @@ class DbMovieRepositoryTest implements BaseIntegrityTest {
             Assertions.assertThat(
                             movies.stream().filter(
                                     m -> m.getTitle().equals("영화테스트3")).findAny().get().getTotalReservedSeats())
-                    .isEqualTo(7);
+                    .isEqualTo(2);
             Assertions.assertThat(
                             movies.stream().filter(
                                     m -> m.getTitle().equals("영화테스트3")).findAny().get().getTotalWatchedSeats())
@@ -217,7 +217,7 @@ class DbMovieRepositoryTest implements BaseIntegrityTest {
             Assertions.assertThat(
                             movies.stream().filter(
                                     m -> m.getTitle().equals("영화테스트3")).findAny().get().getTotalReservedSeats())
-                    .isEqualTo(7);
+                    .isEqualTo(2);
             Assertions.assertThat(
                             movies.stream().filter(
                                     m -> m.getTitle().equals("영화테스트3")).findAny().get().getTotalWatchedSeats())
@@ -245,7 +245,7 @@ class DbMovieRepositoryTest implements BaseIntegrityTest {
             Assertions.assertThat(
                             movies.stream().filter(
                                     m -> m.getTitle().equals("영화테스트3")).findAny().get().getTotalReservedSeats())
-                    .isEqualTo(7);
+                    .isEqualTo(2);
             Assertions.assertThat(
                             movies.stream().filter(
                                     m -> m.getTitle().equals("영화테스트3")).findAny().get().getTotalWatchedSeats())
