@@ -21,31 +21,36 @@
     </div>
 </th:block>
 
-<table>
-    <thead>
-    <tr>
-        <th>예매하기</th>
-        <th>상영 시간표</th>
-        <th>영화관 이름</th>
-        <th>잔여석</th>
-    </tr>
+<th:block th:each="item : ${schedules}">
+    <h2 th:text="${item.key}"></h2>
+    <table>
+        <thead>
+        <tr>
+            <th>예매하기</th>
+            <th>상영 시간표</th>
+            <th>영화관 이름</th>
+            <th>잔여석</th>
+        </tr>
 
-    </thead>
-    <tbody>
-    <tr th:each="schedule : ${schedules}">
-        <td>
-            <form action="/ticketing/process" method="post">
-                <input type="hidden" name="sid" th:value="${schedule.sid}" />
-                <button type="submit">예매하기</button>
-            </form>
-        </td>
-        <td th:text="${#temporals.format(schedule.showAt, 'yyyy-MM-dd HH:mm')}"></td>
-        <td th:text="${schedule.tname}"></td>
-        <td th:text="${schedule.remainSeats}"></td>
-    </tr>
-    </tbody>
+        </thead>
+        <tbody>
+        <tr th:each="schedule : ${item.value}">
+            <td>
+                <form action="/ticketing/process" method="post">
+                    <input type="hidden" name="sid" th:value="${schedule.sid}" />
+                    <button type="submit">예매하기</button>
+                </form>
+            </td>
+            <td th:text="${#temporals.format(schedule.showAt, 'yyyy-MM-dd HH:mm')}"></td>
+            <td th:text="${schedule.tname}"></td>
+            <td th:text="${schedule.remainSeats}"></td>
+        </tr>
+        </tbody>
 
-</table>
+    </table>
+</th:block>
+
+
 
 </body>
 </html>

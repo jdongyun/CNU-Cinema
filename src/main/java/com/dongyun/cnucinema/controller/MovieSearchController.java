@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Controller
@@ -63,8 +65,11 @@ public class MovieSearchController {
             // 영화 ID에 해당하는 스케줄을 모두 불러온다.
             List<Schedule> schedules = scheduleService.findByMid(id);
 
+            //Map<String, List<Schedule>> byTname = new HashMap<>();
+            Map<String, List<Schedule>> schedulesByTname = schedules.stream().collect(Collectors.groupingBy(Schedule::getTname));
+
             model.addAttribute("movie", movie);
-            model.addAttribute("schedules", schedules);
+            model.addAttribute("schedules", schedulesByTname);
             model.addAttribute("now", LocalDate.now());
 
             return "search/movie_info";
