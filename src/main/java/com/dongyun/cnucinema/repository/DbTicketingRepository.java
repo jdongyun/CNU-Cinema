@@ -170,7 +170,7 @@ public class DbTicketingRepository implements TicketingRepository {
         String sql = "select * from Ticketing T " +
                 "JOIN Schedule S on T.sid = S.sid and T.username = :username and T.status = 'R' and S.show_at <= :date " +
                 "JOIN Movie M on S.mid = M.mid " +
-                "where T.rc_at between :start_at and :end_at " +
+                "where S.show_at between :start_at and :end_at " +
                 "order by S.show_at desc";
 
         return jdbcTemplate.query(sql,
