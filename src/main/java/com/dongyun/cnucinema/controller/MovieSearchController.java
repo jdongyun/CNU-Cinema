@@ -49,9 +49,14 @@ public class MovieSearchController {
         } else {
             movies = movieService.findByScheduleShowAtDate(ticketingDate);
         }
+
+        List<Movie> nowOpenMovies = movies.stream().filter(m -> !m.getOpenDay().isAfter(LocalDate.now())).toList();
+        List<Movie> openExpectedMovies = movies.stream().filter(m -> m.getOpenDay().isAfter(LocalDate.now())).toList();
+
         model.addAttribute("title", title);
         model.addAttribute("ticketingDate", ticketingDate);
-        model.addAttribute("movies", movies);
+        model.addAttribute("nowOpenMovies", nowOpenMovies);
+        model.addAttribute("openExpectedMovies", openExpectedMovies);
 
         return "search/index";
     }
@@ -65,7 +70,6 @@ public class MovieSearchController {
             // 영화 ID에 해당하는 스케줄을 모두 불러온다.
             List<Schedule> schedules = scheduleService.findByMid(id);
 
-            //Map<String, List<Schedule>> byTname = new HashMap<>();
             Map<String, List<Schedule>> schedulesByTname = schedules.stream().collect(Collectors.groupingBy(Schedule::getTname));
 
             model.addAttribute("movie", movie);

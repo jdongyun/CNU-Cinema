@@ -15,19 +15,19 @@
         <button type="submit">검색</button>
     </form>
 
-    <p th:text="${movies.size() > 0 ? '' : '해당하는 영화가 없습니다.'}"></p>
-
-    <table th:style="${movies.size() > 0 ? '' : 'visibility:hidden'}">
-        <thead>
+    <th:block th:if="${nowOpenMovies.size() > 0}">
+        <h2>상영 중인 영화</h2>
+        <table>
+            <thead>
             <tr>
                 <th>영화 제목</th>
                 <th>개봉일자</th>
                 <th>관람등급</th>
                 <th>러닝타임</th>
             </tr>
-        </thead>
-        <tbody>
-            <tr th:each="movie : ${movies}">
+            </thead>
+            <tbody>
+            <tr th:each="movie : ${nowOpenMovies}">
                 <td>
                     <a th:href="@{/search/{id}(id=${movie.getMid()})}" th:text="${movie.getTitle()}"></a>
                 </td>
@@ -35,7 +35,34 @@
                 <td th:text="${movie.getRating()}"></td>
                 <td th:text="${movie.getLength()}"></td>
             </tr>
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </th:block>
+
+    <th:block th:if="${openExpectedMovies.size() > 0}">
+        <h2>상영 예정 영화</h2>
+        <table>
+            <thead>
+            <tr>
+                <th>영화 제목</th>
+                <th>개봉일자</th>
+                <th>관람등급</th>
+                <th>러닝타임</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="movie : ${openExpectedMovies}">
+                <td>
+                    <a th:href="@{/search/{id}(id=${movie.getMid()})}" th:text="${movie.getTitle()}"></a>
+                </td>
+                <td th:text="${movie.getOpenDay()}"></td>
+                <td th:text="${movie.getRating()}"></td>
+                <td th:text="${movie.getLength()}"></td>
+            </tr>
+            </tbody>
+        </table>
+    </th:block>
+
+    <h3 th:if="${nowOpenMovies.size() + openExpectedMovies.size() == 0}">해당하는 영화가 없습니다.</h3>
 </body>
 </html>
