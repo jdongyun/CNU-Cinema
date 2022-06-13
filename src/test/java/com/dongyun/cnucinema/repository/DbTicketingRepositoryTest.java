@@ -218,8 +218,8 @@ class DbTicketingRepositoryTest implements BaseIntegrityTest {
 
             // when
             List<Ticketing> ticketings = ticketingRepository.findByUsernameAndWatchedAndRcAtBetweenOrderByShowAtDesc(
-                    "test1", LocalDateTime.of(2022, 5, 9, 0, 0, 0),
-                    LocalDateTime.of(2022, 5, 9, 0, 0, 5));
+                    "test1", LocalDateTime.of(2022, 5, 9, 10, 0, 0),
+                    LocalDateTime.of(2022, 5, 9, 13, 0, 5));
 
             // then
             Assertions.assertThat(ticketings).hasSize(3);
