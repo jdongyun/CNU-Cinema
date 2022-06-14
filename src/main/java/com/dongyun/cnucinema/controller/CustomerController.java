@@ -32,6 +32,7 @@ public class CustomerController {
             RedirectAttributes re,
             @RequestParam(required = false, name = "start_date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate startDate,
             @RequestParam(required = false, name = "end_date") @DateTimeFormat(pattern = "yyyy-MM-dd") LocalDate endDate) {
+        // 사용자 정보 컨트롤러.
 
         // Authentication 객체에서 현재 로그인한 사용자 정보를 가져온다.
         String username = auth.getName();
@@ -39,6 +40,7 @@ public class CustomerController {
         model.addAttribute("authorities", Arrays.toString(auth.getAuthorities().toArray()));
 
         if (startDate == null || endDate == null || startDate.isAfter(endDate)) {
+            // Date의 입력이 올바르지 않으면 기본값으로 초기화한다.
             re.addAttribute("start_date", LocalDate.now().minusDays(30).toString());
             re.addAttribute("end_date", LocalDate.now().toString());
             return "redirect:/user";
@@ -51,6 +53,7 @@ public class CustomerController {
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
 
+        // 필요한 데이터들을 불러온다.
         model.addAttribute("reservedList",
                 ticketingService.findByUsernameAndReservedAndRcAtBetween(username, startAt, endAt));
         model.addAttribute("cancelledList",

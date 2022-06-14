@@ -43,6 +43,8 @@ public class TicketingController {
 
     @PostMapping("/process")
     public String processReservation(Model model, @Validated TicketingProcessingRequest request, BindingResult result) {
+        // 영화 예매 정보 입력 단계 컨트롤러.
+        // 이 단계에서는 스케줄이 올바른지 확인한다.
         if (result.hasErrors()) {
             String errors = Arrays.toString(result.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toArray());
             model.addAttribute("message", errors);
@@ -75,6 +77,8 @@ public class TicketingController {
 
     @PostMapping("/completion")
     public String completeReservation(Authentication auth, Model model, @Validated TicketingCompletionRequest request, BindingResult result) {
+        // 영화 예매 확인 단계 컨트롤러.
+        // 이 단계에서는 예매할 좌석 수가 올바른지 확인하고 예매를 처리한다.
         if (result.hasErrors()) {
             String errors = Arrays.toString(result.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toArray());
             model.addAttribute("message", errors);
@@ -112,6 +116,7 @@ public class TicketingController {
 
     @PostMapping("/cancellation")
     public String cancelReservation(Authentication auth, Model model, @Validated TicketingCancellationRequest request, BindingResult result) {
+        // 예매 취소 컨트롤러.
         if (result.hasErrors()) {
             String errors = Arrays.toString(result.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toArray());
             model.addAttribute("message", errors);

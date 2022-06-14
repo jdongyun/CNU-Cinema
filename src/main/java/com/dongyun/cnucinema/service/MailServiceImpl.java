@@ -24,6 +24,7 @@ public class MailServiceImpl implements MailService {
 
     @Override
     public void sendTicketingMail(Customer customer, Schedule schedule, Ticketing ticketing) {
+        // 메일을 전송하는 비즈니스 로직.
         MimeMessage message = mailSender.createMimeMessage();
         String content = "예매가 완료되었습니다.\n" +
                 "영화 이름: %s\n" +

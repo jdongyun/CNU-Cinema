@@ -29,6 +29,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public boolean join(CustomerJoinRequest dto) {
+        // 가입을 처리하는 비즈니스 로직.
         Set<GrantedAuthority> roles = new HashSet<>(List.of(new SimpleGrantedAuthority("USER")));
 
         validateDuplicateId(dto.getUsername());

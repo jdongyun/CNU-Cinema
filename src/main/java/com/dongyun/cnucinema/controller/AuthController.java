@@ -23,6 +23,7 @@ public class AuthController {
 
     @PostMapping("/signup")
     public String createUser(Model model, @Validated CustomerJoinRequest request, BindingResult bindingResult) {
+        // 회원가입 페이지 컨트롤러.
         if (bindingResult.hasErrors()) {
             String errors = Arrays.toString(bindingResult.getAllErrors().stream().map(DefaultMessageSourceResolvable::getDefaultMessage).toArray());
             model.addAttribute("message", errors);

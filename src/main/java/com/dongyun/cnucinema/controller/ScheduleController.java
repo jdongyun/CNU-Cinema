@@ -30,6 +30,7 @@ public class ScheduleController {
 
     @PostMapping("")
     public String create(Model model, @Validated ScheduleCreateRequest request) {
+        // 스케줄 추가 컨트롤러.
         try {
             Movie movie = movieService.findByMid(request.getMid()).orElseThrow(() -> {
                 throw new IllegalStateException("movie ID가 없습니다.");

@@ -41,6 +41,7 @@ public class TicketingServiceImpl implements TicketingService {
     @Transactional
     @Override
     public Long reserve(TicketingCompletionRequest request, String username) {
+        // 영화 예매 전 제약사항들이 올바르게 지켜졌는지 확인한다.
         if (request.getSeats() > 10) {
             throw new IllegalStateException("10개의 좌석보다 더 많이 예매할 수 없습니다.");
         }
@@ -53,9 +54,9 @@ public class TicketingServiceImpl implements TicketingService {
         Movie movie = movieRepository.findByMid(schedule.getMid()).orElseThrow(() -> {
             throw new IllegalStateException("해당하는 영화가 없습니다.");
         });
-        validateSchedule(schedule);
-        validateAge(customer, movie);
-        validateRemainSeats(schedule, request.getSeats());
+        validateSchedule(schedule); // 상영 시작 시간보다 늦은 시간에 예매를 시도하는지 확인.
+        validateAge(customer, movie); // 사용자의 나이가 관람 가능 나이인지 확인.
+        validateRemainSeats(schedule, request.getSeats()); // 해당 스케줄의 잔여석이 예매를 시도한 좌석수보다 작지 않은지 확인.
 
         TicketingDto dto = TicketingDto.builder()
                 .sid(schedule.getSid())
@@ -71,6 +72,7 @@ public class TicketingServiceImpl implements TicketingService {
 
     @Override
     public void cancel(TicketingCancellationRequest request, String username) {
+        // 예매 취소 전 제약사항들이 올바르게 지켜졌는지 확인한다.
         Ticketing ticketing = ticketingRepository.findById(request.getId()).orElseThrow(() -> {
             throw new IllegalStateException("해당하는 예매 내역이 없습니다.");
         });
